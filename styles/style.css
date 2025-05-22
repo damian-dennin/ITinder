@@ -2,12 +2,12 @@
 :root {
     --violetaOscuro: "#613A67";
     --violetaClaro: "#D4BDE8";
-    --violetaFondoClaro: :"#D4BDE8";
+    --violetaFondoClaro: "#D4BDE8";
     --violetaFondoOscuro: "#230042";
     --violetaMedio: "#C27BFF";
 }
 
-@media (min-width:0px){ /* Feed main*/
+@media (min-width:0px){ 
         *{
             margin: 0;
             padding: 0;
@@ -25,18 +25,6 @@
             position: relative;
             overflow: hidden;
         }
-
-        body.dark-mode {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #230042;
-            position: relative;
-            overflow: hidden;
-        }
-
 
         .logo-container {
             position: absolute;
@@ -70,7 +58,7 @@
             border-radius: 15px;
             background: #613A67;
             box-shadow: 0 0px 20px rgba(0, 0, 0, 0.555);
-            color: #D4BDE8;
+            color: D4BDE8;
             padding: 20px;
             cursor: grab;
             transform-origin: center;
@@ -225,25 +213,6 @@
     transform-origin: center;
     transition: all 0.6s ease;
 }
-
-body.dark-mode .like-indicator , body.dark-mode .dislike-indicator {
-    width: 60px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    font-size: 18px;
-    font-weight: bold;
-    color: #fff;
-    background: radial-gradient(circle at center, #00000077 0%, #bd95dd77 80%);
-    padding: 20px 0;
-    opacity: 0;
-    transform-origin: center;
-    transition: all 0.6s ease;
-}
-
 
 .like-indicator {
     border-radius: 0 50% 50% 0;
@@ -522,6 +491,4 @@ body.dark-mode .like-indicator , body.dark-mode .dislike-indicator {
     pointer-events: auto;
     transition: opacity 0.4s ease, transform 0.4s ease;
 }
-
-
 }
