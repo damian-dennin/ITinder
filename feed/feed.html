@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/style.css">
+    
+    <title>TomberS</title>
+</head>
+<body>
+    <div class="logo-container">
+            <img src="/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img">
+    </div>
+    
+
+    <div class="sidebar" id="sidebar">
+        <div class="menu-icons">
+            <div class="menu-icon hamburger"></div>
+            <div class="menu-icon gear"></div>
+            <div class="menu-icon user"></div>
+            <div class="menu-icon download"></div>
+        </div>
+        <label class="toggle-switch">
+            <input type="checkbox" id = "theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="sidebar-trigger" id="sidebar-trigger"></div>
+
+    <div class="card-container">
+        <div class="project-card" id="project-card">
+            <h2 class="card-title">Nombre proyecto</h2>
+            <div class="card-image">
+            </div>
+            <div class="card-stats">
+                <span class="fluent--people-team-16-filled"></span><span class = "stats-text">07/23</span>
+                <span class="tabler--clock"></span><span class = "stats-text">Indefinido</span>
+                <span class="material-symbols--translate"></span><span class = "stats-text">Español</span>
+                <span class="mdi--tools"></span><span class = "stats-text">Full Stack</span>
+            </div>
+            <div class="card-description">
+                Lorem ipsum dolor sit amet consectetur adipiscing elit. Aliquam egestas dictum class. Cras libero nulla placerat nec nisi dui tempus at, bibendum volutpat sodales. Cras posuere feugiat metus facilisis sollicitudin purus, nulla ante congue mollis non sem eget, in facilisi faucerat sit et accumsan consequat.
+            </div>
+            <div class="card-tech">
+                <div class="tech-icon">Py</div>
+                <div class="tech-icon">Html</div>
+                <div class="tech-icon">Css</div>
+                <div class="tech-icon">Js</div>
+            </div>
+            <div class="actions">
+                <svg class="rotate-icon" viewBox="0 0 24 24">
+                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" fill="currentColor"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-indicators" id="status-indicators">
+        <div class="dislike-indicator">Pass away</div>
+        <div class="like-indicator">Join me</div>
+    </div>
+
+    <div class="expanded-card hidden" id="expanded-card">
+    <button class="close-expanded" id="close-expanded">×</button>
+    <div class="expanded-content">
+        <h2>Nombre proyecto</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam egestas dictum class. Cras libero nulla placerat nec nisi dui tempus at, bibendum volutpat sodales.</p>
+        <ul>
+            <li>Tecnología: Py, Html, Css, Js</li>
+            <li>Idioma: Español</li>
+            <li>Duración: Indefinido</li>
+        </ul>
+    </div>
+</div>
+
+    <script src="/scripts/script.js"></script>
+</body>
+</html>
