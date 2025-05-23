@@ -155,9 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             setTimeout(() => {
                 expandedCard.classList.remove('hidden');
-                requestAnimationFrame(() => {
-                    expandedCard.classList.add('visible');
-                });
+                expandedCard.classList.add('visible');
                 expandedView = true;
                 card.style.transition = 'none';
                 card.style.opacity = '0';
