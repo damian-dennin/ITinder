@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusIndicators = document.getElementById('status-indicators');
     const likeIndicator = statusIndicators.querySelector('.like-indicator');
     const dislikeIndicator = statusIndicators.querySelector('.dislike-indicator');
+    const ampliarIndicator = statusIndicators.querySelector('.ampliar-indicator');
     const sidebar = document.getElementById('sidebar');
     const sidebarTrigger = document.getElementById('sidebar-trigger');
     
@@ -123,12 +124,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (offsetX > 50) {
             likeIndicator.style.opacity = '1';
             dislikeIndicator.style.opacity = '0';
+            ampliarIndicator.style.opacity = '0'; 
         } else if (offsetX < -50) {
             likeIndicator.style.opacity = '0';
             dislikeIndicator.style.opacity = '1';
+            ampliarIndicator.style.opacity = '0'; 
+        } else if (offsetY < -30) {
+            likeIndicator.style.opacity = '0';
+            dislikeIndicator.style.opacity = '0';
+            ampliarIndicator.style.opacity = '1';  
         } else {
             likeIndicator.style.opacity = '0';
             dislikeIndicator.style.opacity = '0';
+            ampliarIndicator.style.opacity = '0'; 
         }
     }
 
