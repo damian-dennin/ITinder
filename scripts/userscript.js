@@ -12,6 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDragging = false;
     let isHoveringSidebar = false;
 
+    const toggle = document.getElementById('theme-toggle');
+
+    toggle.addEventListener('change', () => {
+        document.body.classList.toggle('dark-mode', toggle.checked);
+    });
+
     // Handlers for touch devices
     card.addEventListener('touchstart', handleStart, { passive: false });
     card.addEventListener('touchmove', handleMove, { passive: false });
