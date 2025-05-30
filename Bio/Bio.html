@@ -8,10 +8,8 @@
     <title>TomberS</title>
 </head>
 <body>
-    <div class="header">
-        <svg class="logo">
+    <div class="logo-container">
             <img src="/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img">
-        </svg>
     </div>
     
 
@@ -36,7 +34,7 @@
             <div class="user-image"></div>
 
             <div class="birth-date">
-                <i class="calendar-icon"></i> 15/09/2007
+                <div class="menu-icon calendar"></div> 15/09/2007
             </div>
 
             <div class="card-description">
@@ -47,7 +45,7 @@
                 nulla nunc congue mollis est sem nisi. In facilisi laoreet eu id tincidunt integer
                 cum posuere luctus odio vestibulum porta, nulla nunc congue mollis est sem nisi. In facilisi laoreet eu id tincidunt integer
             </div>
-
+            
             <div class="skills">
                 <div class="skill-item">
                     <div class="menu-icon brain"></div>
@@ -63,6 +61,18 @@
             <div class="dislike-indicator">NOPE</div>
             <div class="like-indicator">LIKE</div>
         </div>
+    </div>
+
+    <div class="expanded-card hidden" id="expanded-card">
+    <button class="close-expanded" id="close-expanded"></button>
+    <div class="expanded-content">
+        <h2>Nombre proyecto</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam egestas dictum class. Cras libero nulla placerat nec nisi dui tempus at, bibendum volutpat sodales.</p>
+        <ul>
+            <li>Tecnología: Py, Html, Css, Js</li>
+            <li>Idioma: Español</li>
+            <li>Duración: Indefinido</li>
+        </ul>
     </div>
 
     <div class="instructions">
