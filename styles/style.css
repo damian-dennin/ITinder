@@ -549,8 +549,8 @@ body.dark-mode .like-indicator , body.dark-mode .dislike-indicator {
         input:checked + .slider:before {
             transform: translateX(20px);
         }
+        
 
-     .expanded-card {
      .expanded-card {
     position: fixed;
     top: 3vh;
@@ -578,7 +578,6 @@ body.dark-mode .like-indicator , body.dark-mode .dislike-indicator {
     backdrop-filter: blur(20px);
 }
 
-.expanded-card.hidden:not(.visible) {
 .expanded-card.hidden:not(.visible) {
     display: none;
 }
@@ -635,10 +634,7 @@ body.dark-mode .like-indicator , body.dark-mode .dislike-indicator {
     gap: 25px;
 }
 
-.expanded-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+
 .expanded-content {
     height: 100%;
     padding: 30px;
@@ -1050,6 +1046,7 @@ body.dark-mode .like-indicator , body.dark-mode .dislike-indicator {
 
 }
 
+
 @media (max-width: 768px) {
     .card-container {
         width: 95%;
@@ -1116,6 +1113,4 @@ body.dark-mode .like-indicator , body.dark-mode .dislike-indicator {
     .card-title { 
         margin-left: 10%;
     }
-}
-
 }
