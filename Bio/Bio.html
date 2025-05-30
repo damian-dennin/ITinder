@@ -21,7 +21,7 @@
             <div class="menu-icon download"></div>
         </div>
         <label class="toggle-switch">
-            <input type="checkbox">
+            <input type="checkbox" id="theme-toggle">
             <span class="slider"></span>
         </label>
     </div>
@@ -30,49 +30,172 @@
     <div class="card-container">
         <div class="project-card" id="project-card">
             <h2 class="card-title">Juan Cruz Palacios</h2>
-
-            <div class="user-image"></div>
-
-            <div class="birth-date">
-                <div class="menu-icon calendar"></div> 15/09/2007
+            <div class="card-image">
             </div>
-
+            <div class="card-stats">
+                <span class="fluent--people-team-16-filled"></span><span class="stats-text">17 años</span>
+                <span class="tabler--clock"></span><span class="stats-text">Disponible</span>
+                <span class="material-symbols--translate"></span><span class="stats-text">Español/Inglés</span>
+                <span class="mdi--tools"></span><span class="stats-text">Full Stack</span>
+            </div>
             <div class="card-description">
-                Lorem ipsum dolor sit amet consectetur adipiscing elit. 
-                Curabitur placerat ultricies felis. Curabitur libero 
-                sodales pharetra aliquam ridiculus fringilla lacinia auctor, 
-                orci praesent ante cum posuere luctus odio vestibulum porta, 
-                nulla nunc congue mollis est sem nisi. In facilisi laoreet eu id tincidunt integer
-                cum posuere luctus odio vestibulum porta, nulla nunc congue mollis est sem nisi. In facilisi laoreet eu id tincidunt integer
+                Desarrollador junior apasionado por la tecnología. Especializado en desarrollo full stack con experiencia en Python, HTML, CSS y Java. Busco oportunidades para colaborar en proyectos innovadores y seguir aprendiendo nuevas tecnologías.
             </div>
-            
-            <div class="skills">
-                <div class="skill-item">
-                    <div class="menu-icon brain"></div>
-                    <span class="skill-text">Python, HTML, CSS, Java</span>
-                </div>
-                <div class="skill-item">
-                    <div class="menu-icon idioms"><span class = "stats-text"></span></div>
-                    <span class="skill-text"><span class = "stats-text"></span>Español/Inglés</span>
-                </div>
+            <div class="card-tech">
+                <div class="tech-icon">Py</div>
+                <div class="tech-icon">Html</div>
+                <div class="tech-icon">Css</div>
+                <div class="tech-icon">Java</div>
             </div>
-        </div>
-        <div class="status-indicators" id="status-indicators">
-            <div class="dislike-indicator">NOPE</div>
-            <div class="like-indicator">LIKE</div>
+            <div class="actions">
+                <svg class="rotate-icon" viewBox="0 0 24 24">
+                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" fill="currentColor"/>
+                </svg>
+            </div>
         </div>
     </div>
 
+    <div class="status-indicators" id="status-indicators">
+        <div class="dislike-indicator">NOPE</div>
+        <div class="like-indicator">LIKE</div>
+    </div>
+
     <div class="expanded-card hidden" id="expanded-card">
-    <button class="close-expanded" id="close-expanded"></button>
-    <div class="expanded-content">
-        <h2>Nombre proyecto</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam egestas dictum class. Cras libero nulla placerat nec nisi dui tempus at, bibendum volutpat sodales.</p>
-        <ul>
-            <li>Tecnología: Py, Html, Css, Js</li>
-            <li>Idioma: Español</li>
-            <li>Duración: Indefinido</li>
-        </ul>
+        <button class="close-expanded" id="close-expanded">×</button>
+        <div class="expanded-content">
+            <div class="expanded-header">
+                <h2 class="expanded-title">Juan Cruz Palacios</h2>
+                <div class="expanded-status">
+                    <span class="status-badge active">Disponible</span>
+                </div>
+            </div>
+
+            <div class="expanded-main">
+                <div class="expanded-left">
+                    <div class="expanded-image">
+                        <img src="/imagenes/user-profile-example.jpg" alt="Foto de perfil">
+                        <div class="image-overlay">
+                            <span class="view-badge">Perfil</span>
+                        </div>
+                    </div>
+                    
+                    <div class="expanded-stats-grid">
+                        <div class="stat-item">
+                            <span class="fluent--people-team-16-filled"></span>
+                            <div class="stat-content">
+                                <span class="stat-label">Edad</span>
+                                <span class="stat-value">17 años</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="tabler--clock"></span>
+                            <div class="stat-content">
+                                <span class="stat-label">Estado</span>
+                                <span class="stat-value">Disponible</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="material-symbols--translate"></span>
+                            <div class="stat-content">
+                                <span class="stat-label">Idiomas</span>
+                                <span class="stat-value">Español/Inglés</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="mdi--tools"></span>
+                            <div class="stat-content">
+                                <span class="stat-label">Especialización</span>
+                                <span class="stat-value">Full Stack</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <h3 class="section-title">Intereses y Objetivos</h3>
+                        <div class="objectives-list">
+                            <div class="objective-item">
+                                <div class="objective-icon">🎯</div>
+                                <span>Desarrollar habilidades en desarrollo web moderno</span>
+                            </div>
+                            <div class="objective-item">
+                                <div class="objective-icon">💡</div>
+                                <span>Participar en proyectos innovadores</span>
+                            </div>
+                            <div class="objective-item">
+                                <div class="objective-icon">🤝</div>
+                                <span>Colaborar en equipos multidisciplinarios</span>
+                            </div>
+                            <div class="objective-item">
+                                <div class="objective-icon">📚</div>
+                                <span>Aprender nuevas tecnologías constantemente</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="expanded-right">
+                    <div class="section">
+                        <h3 class="section-title">Sobre Mí</h3>
+                        <p class="section-content">
+                            Soy un desarrollador junior de 17 años apasionado por la tecnología y el desarrollo de software. Me especializo en desarrollo full stack con experiencia en Python, HTML, CSS y Java. Estoy constantemente aprendiendo nuevas tecnologías y buscando oportunidades para aplicar mis conocimientos en proyectos reales.
+                            
+                            Me motiva trabajar en equipo y contribuir a soluciones innovadoras que generen un impacto positivo. Tengo un enfoque proactivo para resolver problemas y una fuerte dedicación al aprendizaje continuo en el mundo del desarrollo web.
+                        </p>
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Habilidades Técnicas</h3>
+                        <div class="tech-grid">
+                            <div class="tech-item">
+                                <span class="tech-icon-expanded">Py</span>
+                                <span class="tech-name">Python</span>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-icon-expanded">Html</span>
+                                <span class="tech-name">HTML5</span>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-icon-expanded">Css</span>
+                                <span class="tech-name">CSS3</span>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-icon-expanded">Java</span>
+                                <span class="tech-name">Java</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Áreas de Interés</h3>
+                        <div class="skills-grid">
+                            <div class="skill-badge">Desarrollo Web</div>
+                            <div class="skill-badge">Backend Development</div>
+                            <div class="skill-badge">Base de Datos</div>
+                            <div class="skill-badge">API REST</div>
+                            <div class="skill-badge">Mobile Apps</div>
+                            <div class="skill-badge">Cloud Computing</div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Disponibilidad para Proyectos</h3>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%"></div>
+                            </div>
+                            <span class="progress-text">85% Disponible</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="expanded-footer">
+                <div class="footer-actions">
+                    <button class="action-btn primary">Conectar</button>
+                    <button class="action-btn secondary">Ver Portfolio</button>
+                    <button class="action-btn tertiary">Enviar Mensaje</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="instructions">
