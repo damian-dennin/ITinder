@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const expandedCard = document.getElementById('expanded-card');
+    const closeExpanded = document.getElementById('close-expanded');
+    let expandedView = false;
+
     const card = document.getElementById('project-card');
     const sidebar = document.getElementById('sidebar');
     const sidebarTrigger = document.getElementById('sidebar-trigger');
@@ -64,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleMove(e) {
+        if (expandedView) return;
         if (!isDragging) return;
 
         let currentY;
@@ -83,15 +88,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleEnd() {
+        if (expandedView) return;
         if (!isDragging) return;
         isDragging = false;
 
-        // Si se arrastró hacia arriba lo suficiente, ocultar la tarjeta
+        // Si se arrastró hacia arriba lo suficiente, mostrar vista expandida
         if (offsetY < -100) {
+            card.style.transition = 'transform 0.5s ease';
             card.style.transform = `translateY(-${window.innerHeight}px)`;
-            setTimeout(resetCard, 500);
+
+            setTimeout(() => {
+                expandedCard.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    expandedCard.classList.add('visible');
+                });
+                expandedView = true;
+
+                // Resetear la card para cuando se cierre el expandido
+                card.style.transition = 'none';
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(0)';
+                card.style.transition = 'opacity 0.3s ease';
+                card.style.opacity = '1';
+            }, 500);
         } else {
             // Volver a posición original
+            card.style.transition = 'transform 0.5s ease';
             card.style.transform = 'translateY(0)';
         }
     }
@@ -106,4 +128,13 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.opacity = '1';
         }, 100);
     }
+
+    closeExpanded.addEventListener('click', () => {
+        expandedCard.classList.remove('visible');
+        setTimeout(() => {
+            expandedCard.classList.add('hidden');
+            expandedView = false;
+        }, 400);
+    });
+
 });
