@@ -126,16 +126,19 @@
         }
 
         .user-card-image {
-            width: 150px;
-            height: 150px;
-            background-color:#fff; /* color de fondo */
-            border-radius: 50%;        /* círculo perfecto */
-            margin: 0 auto 15px auto;  /* centrado horizontal y margen abajo */
+            width: 40vw;              
+            max-width: 150px;          
+            height: auto;
+            aspect-ratio: 1 / 1;       
+            background-color: #fff;    
+            border-radius: 50%;        
+            margin: 0 auto 15px auto;  
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
         }
+
 
         .user-image {
             width: 120px;
