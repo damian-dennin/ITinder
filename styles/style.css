@@ -409,12 +409,17 @@ body.dark-mode .like-indicator , body.dark-mode .dislike-indicator {
         }
 
         .stats-text {
-            font-size: 11px;
+            font-size: 14px;
             color: #D4BDE8;
             margin-right: 20px;
             margin-left: 0px;
             font-family: bold; 
             padding-top: 3px;
+        }
+
+        .iconos {
+            object-fit: contain;
+            margin-bottom: -5px;
         }
 
         /* Sidebar menu styles */
