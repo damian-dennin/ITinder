@@ -60,9 +60,9 @@
             height: 50px;
             object-fit: contain;
             margin-bottom: 10px;
-            left: 0;
+            left: 10;
         }
-
+        
         .card-title-row {
             display: flex;
             align-items: center;
@@ -127,7 +127,7 @@
         }
 
         .user-card-image {
-            width: 40vw;              
+            width: 150px;              
             max-width: 150px;          
             height: auto;
             aspect-ratio: 1 / 1;       
