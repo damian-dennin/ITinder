@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="logo-container">
-            <img src="/static/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img">
+        <img src="/static/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img">
     </div>
     
     <div class="sidebar" id="sidebar">
@@ -20,25 +20,40 @@
             <div class="menu-icon download"></div>
         </div>
         <label class="toggle-switch">
-            <input type="checkbox" id = "theme-toggle">
+            <input type="checkbox" id="theme-toggle">
             <span class="slider"></span>
         </label>
     </div>
     <div class="sidebar-trigger" id="sidebar-trigger"></div>
 
+    <!-- Menú móvil agregado -->
+    <div class="mobile-header" id="mobile-header">
+        <img src="/static/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img-mini">        
+        <div class="menu-icons">
+            <a href="../Templates/feed.html" class="menu-icon house"></a>
+            <div class="menu-icon gear"></div>
+            <div class="menu-icon user"></div>
+            <div class="menu-icon download"></div>
+        </div>
+        <label class="toggle-switch">
+            <input type="checkbox" id="theme-togglemo">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <!-- Fin del menú móvil -->
+
     <div class="card-container">
         <div class="project-card" id="project-card">
             <div class="card-title-row">
-            <img src="/static/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img-mini">
-            <h2 class="card-title">Nombre proyecto</h2>
+                <img src="/static/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img-mini">
+                <h2 class="card-title">Nombre proyecto</h2>
             </div>
-            <div class="card-image">
-            </div>
+            <div class="card-image"></div>
             <div class="card-stats">
-                <span><span class="fluent--people-team-16-filled iconos"></span><span class = "stats-text">07/23</span></span>
-                <span><span class="tabler--clock iconos"></span><span class = "stats-text">Indefinido</span></span>
-                <span><span class="material-symbols--translate iconos"></span><span class = "stats-text">Español</span></span>
-                <span><span class="mdi--tools iconos"></span><span class = "stats-text">Full Stack</span></span>
+                <span><span class="fluent--people-team-16-filled iconos"></span><span class="stats-text">07/23</span></span>
+                <span><span class="tabler--clock iconos"></span><span class="stats-text">Indefinido</span></span>
+                <span><span class="material-symbols--translate iconos"></span><span class="stats-text">Español</span></span>
+                <span><span class="mdi--tools iconos"></span><span class="stats-text">Full Stack</span></span>
             </div>
             <div class="card-description">
                 Lorem ipsum dolor sit amet consectetur adipiscing elit. Aliquam egestas dictum class. Cras libero nulla placerat nec nisi dui tempus at, bibendum volutpat sodales. Cras posuere feugiat metus facilisis sollicitudin purus, nulla ante congue mollis non sem eget, in facilisi faucerat sit et accumsan consequat.
@@ -59,13 +74,13 @@
 
     <div class="status-indicators" id="status-indicators">
         <div class="dislike-indicator">Pass away</div>
-        <div class ="ampliar-indicator"> ↑ Show more ↑</div>
+        <div class="ampliar-indicator"> ↑ Show more ↑</div>
         <div class="like-indicator">Join me</div>
     </div>
 
     <div class="expanded-card hidden" id="expanded-card">
-    <button class="close-expanded" id="close-expanded">×</button>
-    <div class="expanded-content">
+        <button class="close-expanded" id="close-expanded">×</button>
+        <div class="expanded-content">
             <div class="expanded-header">
                 <h2 class="expanded-title">Sistema de Gestión Empresarial</h2>
                 <div class="expanded-status">
@@ -112,6 +127,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="section">
                         <h3 class="section-title">Objetivos del Proyecto</h3>
                         <div class="objectives-list">
@@ -139,8 +155,6 @@
                     <div class="section">
                         <h3 class="section-title">Descripción del Proyecto</h3>
                         <p class="section-content">
-                            Este proyecto consiste en el desarrollo de un sistema integral de gestión empresarial que permitirá a las empresas optimizar sus procesos internos, gestionar recursos humanos, controlar inventarios y generar reportes detallados. La aplicación incluirá módulos para contabilidad, ventas, compras y administración general.
-                            Este proyecto consiste en el desarrollo de un sistema integral de gestión empresarial que permitirá a las empresas optimizar sus procesos internos, gestionar recursos humanos, controlar inventarios y generar reportes detallados. La aplicación incluirá módulos para contabilidad, ventas, compras y administración general.
                             Este proyecto consiste en el desarrollo de un sistema integral de gestión empresarial que permitirá a las empresas optimizar sus procesos internos, gestionar recursos humanos, controlar inventarios y generar reportes detallados. La aplicación incluirá módulos para contabilidad, ventas, compras y administración general.
                         </p>
                     </div>
@@ -200,11 +214,7 @@
             </div>
         </div>
     </div>
-    </div>
 
-    <div class="expanded-card hidden" id="expanded-card">
-    <button class="close-expanded" id="close-expanded">×</button>
-    </div>  
     <script src="/static/scripts/script.js"></script>
 </body>
 </html>
