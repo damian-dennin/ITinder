@@ -12,12 +12,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDragging = false;
     let isHoveringSidebar = false;
 
+    // Controladores de tema oscuro corregidos
     const toggle = document.getElementById('theme-toggle');
+    const togglemo = document.getElementById('theme-togglemo');
 
-    toggle.addEventListener('change', () => {
-        document.body.classList.toggle('dark-mode', toggle.checked);
+    // Función para sincronizar ambos toggles
+    function syncThemeToggles(sourceToggle, targetToggle) {
+        targetToggle.checked = sourceToggle.checked;
+        document.body.classList.toggle('dark-mode', sourceToggle.checked);
+    }
+
+    // Event listener para el primer toggle
+    toggle?.addEventListener('change', () => {
+        syncThemeToggles(toggle, togglemo);
     });
 
+    // Event listener para el segundo toggle (móvil)
+    togglemo?.addEventListener('change', () => {
+        syncThemeToggles(togglemo, toggle);
+    });
+    
     // Handlers for touch devices
     card.addEventListener('touchstart', handleStart, { passive: false });
     card.addEventListener('touchmove', handleMove, { passive: false });
