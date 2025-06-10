@@ -4,7 +4,7 @@
       "id": 1,
       "title": "Sistema de Gestión Empresarial",
       "description": "Este proyecto consiste en el desarrollo de un sistema integral de gestión empresarial que permitirá a las empresas optimizar sus procesos internos, gestionar recursos humanos, controlar inventarios y generar reportes detallados. La aplicación incluirá módulos para contabilidad, ventas, compras y administración general.",
-      "image_url": "static/imagenes/coding-foto-ejemplo.jpg",
+      "image_url": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80",
       "stats": {
         "team_current": 7,
         "team_max": 23,
@@ -69,7 +69,7 @@
       "id": 2,
       "title": "Aplicación de E-commerce",
       "description": "Desarrollo de una plataforma completa de comercio electrónico con funcionalidades avanzadas de gestión de productos, pagos seguros, y análisis de ventas. Incluye panel administrativo y aplicación móvil.",
-      "image_url": "/imagenes/ecommerce-ejemplo.jpg",
+      "image_url": "https://images.unsplash.com/photo-1542831371-d531d36971e6?auto=format&fit=crop&w=800&q=80",
       "stats": {
         "team_current": 5,
         "team_max": 15,
@@ -134,7 +134,7 @@
       "id": 3,
       "title": "Sistema de Aprendizaje Online",
       "description": "Plataforma educativa interactiva con cursos, evaluaciones, seguimiento de progreso y gamificación. Incluye herramientas para instructores y estudiantes con videoconferencias integradas.",
-      "image_url": "/imagenes/education-ejemplo.jpg",
+      "image_url": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80",
       "stats": {
         "team_current": 3,
         "team_max": 12,
@@ -194,6 +194,272 @@
       "status": "active",
       "created_at": "2024-03-01",
       "updated_at": "2024-12-05"
+    },
+    {
+      "id": 4,
+      "title": "App de Gestión de Salud Personal",
+      "description": "Aplicación móvil para el seguimiento de salud personal que permite registrar datos vitales, recibir recomendaciones personalizadas y sincronizar con dispositivos wearables.",
+      "image_url": "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=800&q=80",
+      "stats": {
+        "team_current": 6,
+        "team_max": 10,
+        "duration": "5 meses",
+        "language": "Español/Inglés",
+        "type": "Mobile App"
+      },
+      "technologies": [
+        {
+          "name": "Flutter",
+          "icon": "Fl"
+        },
+        {
+          "name": "Firebase",
+          "icon": "Fb"
+        },
+        {
+          "name": "REST API",
+          "icon": "API"
+        }
+      ],
+      "objectives": [
+        {
+          "text": "Desarrollar interfaz amigable y accesible",
+          "status": "completed",
+          "icon": "✓"
+        },
+        {
+          "text": "Integrar sincronización con dispositivos wearables",
+          "status": "in_progress",
+          "icon": "⏳"
+        },
+        {
+          "text": "Implementar recomendaciones personalizadas",
+          "status": "pending",
+          "icon": "📋"
+        }
+      ],
+      "skills_needed": [
+        "Flutter",
+        "Backend con Firebase",
+        "Diseño UI/UX",
+        "Integración IoT"
+      ],
+      "progress": 55,
+      "status": "active",
+      "created_at": "2024-04-01",
+      "updated_at": "2024-11-20"
+    },
+    {
+      "id": 5,
+      "title": "Plataforma de Gestión de Eventos",
+      "description": "Sistema web para la organización y gestión de eventos corporativos y sociales, incluyendo registro de asistentes, venta de entradas y control de accesos.",
+      "image_url": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+      "stats": {
+        "team_current": 8,
+        "team_max": 20,
+        "duration": "7 meses",
+        "language": "Español",
+        "type": "Full Stack"
+      },
+      "technologies": [
+        {
+          "name": "Angular",
+          "icon": "Ng"
+        },
+        {
+          "name": "Spring Boot",
+          "icon": "Sb"
+        },
+        {
+          "name": "MySQL",
+          "icon": "My"
+        }
+      ],
+      "objectives": [
+        {
+          "text": "Crear sistema de registro de asistentes",
+          "status": "completed",
+          "icon": "✓"
+        },
+        {
+          "text": "Implementar venta de entradas online",
+          "status": "in_progress",
+          "icon": "⏳"
+        },
+        {
+          "text": "Desarrollar módulo de control de accesos",
+          "status": "pending",
+          "icon": "📋"
+        }
+      ],
+      "skills_needed": [
+        "Angular",
+        "Java Backend",
+        "Base de Datos Relacional",
+        "Seguridad Web"
+      ],
+      "progress": 50,
+      "status": "active",
+      "created_at": "2024-05-01",
+      "updated_at": "2024-11-30"
+    },
+    {
+      "id": 6,
+      "title": "Red Social para Profesionales",
+      "description": "Plataforma social orientada a profesionales para networking, intercambio de conocimientos y oportunidades laborales. Incluye perfiles, mensajes y foros temáticos.",
+      "image_url": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80",
+      "stats": {
+        "team_current": 10,
+        "team_max": 25,
+        "duration": "Indefinido",
+        "language": "Multilingüe",
+        "type": "Full Stack"
+      },
+      "technologies": [
+        {
+          "name": "Ruby on Rails",
+          "icon": "Ro"
+        },
+        {
+          "name": "React",
+          "icon": "Rc"
+        },
+        {
+          "name": "PostgreSQL",
+          "icon": "Pg"
+        }
+      ],
+      "objectives": [
+        {
+          "text": "Desarrollar perfiles profesionales personalizables",
+          "status": "completed",
+          "icon": "✓"
+        },
+        {
+          "text": "Implementar sistema de mensajería interna",
+          "status": "in_progress",
+          "icon": "⏳"
+        },
+        {
+          "text": "Crear foros temáticos interactivos",
+          "status": "pending",
+          "icon": "📋"
+        }
+      ],
+      "skills_needed": [
+        "Ruby on Rails",
+        "React",
+        "Diseño UX",
+        "Bases de Datos"
+      ],
+      "progress": 60,
+      "status": "active",
+      "created_at": "2024-06-01",
+      "updated_at": "2024-12-01"
+    },
+    {
+      "id": 7,
+      "title": "Sistema de Monitoreo de IoT",
+      "description": "Plataforma para monitoreo y control de dispositivos IoT en tiempo real, con alertas configurables y panel de control centralizado.",
+      "image_url": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+      "stats": {
+        "team_current": 4,
+        "team_max": 12,
+        "duration": "4 meses",
+        "language": "Inglés",
+        "type": "Backend/IoT"
+      },
+      "technologies": [
+        {
+          "name": "Python",
+          "icon": "Py"
+        },
+        {
+          "name": "MQTT",
+          "icon": "Mq"
+        },
+        {
+          "name": "InfluxDB",
+          "icon": "If"
+        }
+      ],
+      "objectives": [
+        {
+          "text": "Implementar comunicación MQTT entre dispositivos",
+          "status": "completed",
+          "icon": "✓"
+        },
+        {
+          "text": "Desarrollar panel de control en tiempo real",
+          "status": "in_progress",
+          "icon": "⏳"
+        },
+        {
+          "text": "Configurar alertas personalizadas",
+          "status": "pending",
+          "icon": "📋"
+        }
+      ],
+      "skills_needed": [
+        "Python",
+        "IoT",
+        "Bases de Datos Time-Series",
+        "Protocolos MQTT"
+      ],
+      "progress": 45,
+      "status": "active",
+      "created_at": "2024-07-01",
+      "updated_at": "2024-11-25"
+    },
+    {
+      "id": 8,
+      "title": "Juego Educativo para Niños",
+      "description": "Desarrollo de un videojuego educativo para niños de primaria, con actividades de matemáticas, lenguaje y ciencias, que promueve el aprendizaje lúdico.",
+      "image_url": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=800&q=80",
+      "stats": {
+        "team_current": 6,
+        "team_max": 10,
+        "duration": "6 meses",
+        "language": "Español/Inglés",
+        "type": "Game Development"
+      },
+      "technologies": [
+        {
+          "name": "Unity",
+          "icon": "Un"
+        },
+        {
+          "name": "C#",
+          "icon": "Cs"
+        }
+      ],
+      "objectives": [
+        {
+          "text": "Diseñar niveles educativos atractivos",
+          "status": "completed",
+          "icon": "✓"
+        },
+        {
+          "text": "Implementar mecánicas de juego interactivas",
+          "status": "in_progress",
+          "icon": "⏳"
+        },
+        {
+          "text": "Realizar pruebas con usuarios finales",
+          "status": "pending",
+          "icon": "📋"
+        }
+      ],
+      "skills_needed": [
+        "Desarrollo con Unity",
+        "Programación en C#",
+        "Diseño de Juegos",
+        "Psicopedagogía"
+      ],
+      "progress": 55,
+      "status": "active",
+      "created_at": "2024-08-01",
+      "updated_at": "2024-12-01"
     }
   ]
 }
