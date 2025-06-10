@@ -1356,7 +1356,7 @@ body.dark-mode .viewing-progress {
 @media (max-width: 768px) {
     #expanded-card {
         margin-top: 80px; 
-        margin-bottom: 20px;
+        height: 80%;
     }
     .sidebar {
         display: none;
