@@ -1,10 +1,10 @@
-// FEED
+// FEED - Versión mejorada con mejor gestión de eventos
 document.addEventListener('DOMContentLoaded', () => {
     const expandedCard = document.getElementById('expanded-card');
     const closeExpanded = document.getElementById('close-expanded');
     let expandedView = false;
 
-    const card = document.getElementById('project-card');
+    let card = document.getElementById('project-card');
     const statusIndicators = document.getElementById('status-indicators');
     const likeIndicator = statusIndicators.querySelector('.like-indicator');
     const dislikeIndicator = statusIndicators.querySelector('.dislike-indicator');
@@ -20,20 +20,43 @@ document.addEventListener('DOMContentLoaded', () => {
     let isHoveringSidebar = false;
 
     // modo oscuro o claro
-
     const toggle = document.getElementById('theme-toggle');
 
     toggle.addEventListener('change', () => {
         document.body.classList.toggle('dark-mode', toggle.checked);
     });
 
-    // Handlers for touch devices
-    card.addEventListener('touchstart', handleStart, { passive: false });
-    card.addEventListener('touchmove', handleMove, { passive: false });
-    card.addEventListener('touchend', handleEnd);
+    // Función para configurar handlers de swipe en cualquier tarjeta
+    function setupSwipeHandlers(cardElement) {
+        if (!cardElement) {
+            console.warn('No se puede configurar swipe handlers: elemento no encontrado');
+            return;
+        }
 
-    // Handlers for mouse devices
-    card.addEventListener('mousedown', handleStart);
+        console.log('Configurando swipe handlers para:', cardElement.id);
+
+        // Remover listeners existentes para evitar duplicados
+        cardElement.removeEventListener('touchstart', handleStart);
+        cardElement.removeEventListener('touchmove', handleMove);
+        cardElement.removeEventListener('touchend', handleEnd);
+        cardElement.removeEventListener('mousedown', handleStart);
+
+        // Agregar nuevos listeners
+        cardElement.addEventListener('touchstart', handleStart, { passive: false });
+        cardElement.addEventListener('touchmove', handleMove, { passive: false });
+        cardElement.addEventListener('touchend', handleEnd);
+        cardElement.addEventListener('mousedown', handleStart);
+
+        // Actualizar referencia global
+        card = cardElement;
+    }
+
+    // Configurar handlers iniciales
+    if (card) {
+        setupSwipeHandlers(card);
+    }
+
+    // Agregar listeners globales para mouse (estos no se duplican)
     document.addEventListener('mousemove', handleMove);
     document.addEventListener('mouseup', handleEnd);
 
@@ -45,23 +68,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle mouse leaving sidebar area
     sidebar.addEventListener('mouseleave', () => {
         isHoveringSidebar = false;
         sidebar.classList.remove('active');
     });
 
-    // Prevent sidebar from showing if dragging
     document.addEventListener('mousemove', (e) => {
-        // Check if cursor is near the right edge of the screen
         const edgeDistance = window.innerWidth - e.clientX;
         
-        // If cursor is close to the edge and not dragging, prepare to show sidebar
         if (edgeDistance < 15 && !isDragging && !isHoveringSidebar) {
             isHoveringSidebar = true;
             sidebar.classList.add('active');
         } 
-        // If cursor moves away from sidebar area and we're not hovering over the sidebar itself
         else if (edgeDistance > 80 && !isDragging && isHoveringSidebar && e.target.id !== 'sidebar' && !sidebar.contains(e.target)) {
             isHoveringSidebar = false;
             sidebar.classList.remove('active');
@@ -69,19 +87,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function handleStart(e) {
+        // Asegurar que estamos trabajando con la tarjeta correcta
+        card = document.getElementById('project-card');
+        if (!card) {
+            console.warn('No se encontró la tarjeta para iniciar el drag');
+            return;
+        }
+
         isDragging = true;
         
-        // Hide sidebar if it's open while starting to drag
         if (sidebar.classList.contains('active')) {
             sidebar.classList.remove('active');
         }
         
-        // Prevent default only for mouse to avoid text selection
         if (e.type === 'mousedown') {
             e.preventDefault();
         }
         
-        // Get starting position
         if (e.type === 'touchstart') {
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
@@ -90,20 +112,24 @@ document.addEventListener('DOMContentLoaded', () => {
             startY = e.clientY;
         }
         
-        // Reset transforms
         offsetX = 0;
         offsetY = 0;
         card.style.transition = 'none';
+        
+        console.log('Drag iniciado en:', startX, startY);
     }
 
     function handleMove(e) {
         if (expandedView) return;
         if (!isDragging) return;
         
-        // Get current position
+        // Actualizar referencia a la tarjeta actual
+        card = document.getElementById('project-card');
+        if (!card) return;
+        
         let currentX, currentY;
         if (e.type === 'touchmove') {
-            e.preventDefault(); // Prevent scrolling when dragging
+            e.preventDefault();
             currentX = e.touches[0].clientX;
             currentY = e.touches[0].clientY;
         } else {
@@ -111,15 +137,13 @@ document.addEventListener('DOMContentLoaded', () => {
             currentY = e.clientY;
         }
         
-        // Calculate offset
         offsetX = currentX - startX;
         offsetY = currentY - startY;
         
-        // Apply transformation
-        const rotate = offsetX * 0.1; // Add slight rotation based on drag distance
+        const rotate = offsetX * 0.1;
         card.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${rotate}deg)`;
         
-        // Show indicators based on direction
+        // Mostrar indicadores
         statusIndicators.style.opacity = '1';
         if (offsetX > 50) {
             likeIndicator.style.opacity = '1';
@@ -143,23 +167,33 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleEnd() {
         if (expandedView) return;
         if (!isDragging) return;
+        
+        // Actualizar referencia a la tarjeta actual
+        card = document.getElementById('project-card');
+        if (!card) return;
+        
         isDragging = false;
         
         card.style.transition = 'transform 0.5s ease';
         statusIndicators.style.opacity = '0';
         
-        // If dragged far enough, swipe away
+        console.log('Drag terminado con offset:', offsetX, offsetY);
+        
         if (offsetX > 100) {
             card.style.transform = `translate(${window.innerWidth}px, ${offsetY}px) rotate(30deg)`;
-            setTimeout(resetCard, 500);
+            setTimeout(() => {
+                resetCard();
+                handleSwipe('right');
+            }, 500);
         } else if (offsetX < -100) {
             card.style.transform = `translate(-${window.innerWidth}px, ${offsetY}px) rotate(-30deg)`;
-            setTimeout(resetCard, 500);
-        
-        }else if (offsetY < -100) {
+            setTimeout(() => {
+                resetCard();
+                handleSwipe('left');
+            }, 500);
+        } else if (offsetY < -100) {
             card.style.transition = 'transform 0.5s ease';
             card.style.transform = `translate(0px, -${window.innerHeight}px) rotate(0deg)`;
-
 
             setTimeout(() => {
                 expandedCard.classList.remove('hidden');
@@ -173,13 +207,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.opacity = '1';
             }, 500);
         } else {
-            // Reset position if not dragged far enough
             card.style.transform = 'translate(0, 0) rotate(0deg)';
         }
     }
 
     function resetCard() {
-        // Hide the card, reset position, and show it again
+        card = document.getElementById('project-card');
+        if (!card) return;
+        
         card.style.transition = 'none';
         card.style.opacity = '0';
         card.style.transform = 'translate(0, 0) rotate(0deg)';
@@ -191,14 +226,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     closeExpanded.addEventListener('click', () => {
-    expandedCard.classList.remove('visible');
-    setTimeout(() => {
-        expandedCard.classList.add('hidden');
-        expandedView = false;
-    }, 400);
+        expandedCard.classList.remove('visible');
+        setTimeout(() => {
+            expandedCard.classList.add('hidden');
+            expandedView = false;
+        }, 400);
     });
 
+    function handleSwipe(direction) {
+        if (window.projectsManager) {
+            window.projectsManager.handleCardSwipe(direction);
+        }
+    }
+
+    // Hacer funciones disponibles globalmente
+    window.handleSwipe = handleSwipe;
+    window.setupSwipeHandlers = setupSwipeHandlers;
 });
-
-
-// -------------------

@@ -1053,6 +1053,294 @@ body.dark-mode .like-indicator , body.dark-mode .dislike-indicator {
   border: 3px solid rgba(255, 166, 0, 0);
 }
 
+
+/* Estilos para el mensaje cuando no hay proyectos */
+.no-projects-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    color: white;
+    max-width: 400px;
+    margin: 0 auto;
+    min-height: 500px;
+}
+
+.no-projects-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+.no-projects-message h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.no-projects-message p {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+.no-projects-message p:last-child {
+    font-weight: 500;
+    margin-top: 20px;
+    opacity: 1;
+}
+
+/* Modo oscuro para el mensaje sin proyectos */
+.dark-mode .no-projects-message {
+    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Animación sutil para el mensaje */
+.no-projects-message {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .no-projects-message {
+        padding: 40px 20px;
+        margin: 0 20px;
+        min-height: 400px;
+    }
+    
+    .no-projects-icon {
+        font-size: 3rem;
+    }
+    
+    .no-projects-message h2 {
+        font-size: 1.5rem;
+    }
+    
+    .no-projects-message p {
+        font-size: 1rem;
+    }
+}
+
+/* Estilos adicionales para el sistema de proyectos vistos */
+
+/* Mensaje cuando todos los proyectos han sido vistos */
+.all-projects-viewed-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.all-projects-viewed-message::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.all-projects-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    animation: bounce 2s infinite;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+.all-projects-viewed-message h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.all-projects-viewed-message p {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+.restart-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(10px);
+}
+
+.restart-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.restart-button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Mejorar el mensaje de no proyectos existente */
+.no-projects-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.no-projects-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+.no-projects-message h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.no-projects-message p {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    opacity: 0.9;
+}
+
+/* Modo oscuro para los mensajes */
+body.dark-mode .all-projects-viewed-message {
+    background: linear-gradient(135deg, #434343 0%, #000000 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .no-projects-message {
+    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .restart-button {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .restart-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Indicador de progreso opcional (si quieres mostrar cuántos proyectos quedan por ver) */
+.viewing-progress {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .viewing-progress {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .all-projects-viewed-message,
+    .no-projects-message {
+        margin: 0 20px;
+        padding: 30px 20px;
+    }
+    
+    .all-projects-icon,
+    .no-projects-icon {
+        font-size: 3rem;
+    }
+    
+    .all-projects-viewed-message h2,
+    .no-projects-message h2 {
+        font-size: 1.5rem;
+    }
+    
+    .restart-button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+    
+    .viewing-progress {
+        top: 10px;
+        right: 10px;
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+}
+
 }
 
 
