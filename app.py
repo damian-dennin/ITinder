@@ -171,9 +171,6 @@ def bio():
 def feed():
     return render_template('feed.html')
 
-
-
-
 @app.route('/api/projects')
 def get_projects():
     """Obtener todos los proyectos"""

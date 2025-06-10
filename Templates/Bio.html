@@ -9,7 +9,7 @@
 </head>
 <body style="justify-content: center; align-items: center;">
     <div class="logo-container">
-            <a href="feed.html">
+            <a href="{{ url_for('feed') }}">
                 <img src="/static/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img">
             </a>    
     </div>
@@ -33,7 +33,7 @@
     <div class="mobile-header" id="mobile-header">
     <img src="/static/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img-mini">        
     <div class="menu-icons">
-        <a href="../Templates/feed.html" class="menu-icon house"></a>
+        <a href="{{ url_for('feed') }}" class="menu-icon house"></a>
         <div class="menu-icon gear"></div>
         <div class="menu-icon user"></div>
         <div class="menu-icon download"></div>

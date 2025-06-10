@@ -16,7 +16,7 @@
         <div class="menu-icons">
             <div class="menu-icon hamburger"></div>
             <div class="menu-icon gear"></div>
-            <a href="Bio.html" class="menu-icon user"></a>
+            <a href="{{ url_for('bio') }}" class="menu-icon user"></a>
             <div class="menu-icon download"></div>
         </div>
         <label class="toggle-switch">
@@ -30,9 +30,9 @@
     <div class="mobile-header" id="mobile-header">
         <img src="/static/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img-mini">        
         <div class="menu-icons">
-            <a href="../Templates/feed.html" class="menu-icon house"></a>
+            <a href="{{ url_for('feed') }}" class="menu-icon house"></a>
             <div class="menu-icon gear"></div>
-            <a href="Bio.html" class="menu-icon user"></a>
+            <a href="{{ url_for('bio') }}" class="menu-icon user"></a>
             <div class="menu-icon download"></div>
         </div>
         <label class="toggle-switch">
