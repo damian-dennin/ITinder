@@ -159,6 +159,15 @@ def index():
     """Página principal que muestra el feed de proyectos"""
     return render_template('feed.html')
 
+@app.route('/bio')
+def bio():
+    return render_template('Bio.html')
+
+@app.route('/feed')
+def feed():
+    return render_template('feed.html')
+
+
 @app.route('/api/projects')
 def get_projects():
     """Obtener todos los proyectos"""
