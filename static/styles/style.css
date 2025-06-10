@@ -1092,7 +1092,9 @@ body.dark-mode .like-indicator , body.dark-mode .dislike-indicator {
 
 
 @media (max-width: 768px) {
-    /* Ocultar sidebar en móviles */
+    #expanded-card {
+        margin-top: 80px; 
+    }
     .sidebar {
         display: none;
     }
