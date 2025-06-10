@@ -21,22 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // modo oscuro o claro
     const toggle = document.getElementById('theme-toggle');
-    const togglemo = document.getElementById('theme-togglemo');
 
-    // Función para sincronizar ambos toggles
-    function syncThemeToggles(sourceToggle, targetToggle) {
-        targetToggle.checked = sourceToggle.checked;
-        document.body.classList.toggle('dark-mode', sourceToggle.checked);
-    }
-
-    // Event listener para el primer toggle
-    toggle?.addEventListener('change', () => {
-        syncThemeToggles(toggle, togglemo);
-    });
-
-    // Event listener para el segundo toggle (móvil)
-    togglemo?.addEventListener('change', () => {
-        syncThemeToggles(togglemo, toggle);
+    toggle.addEventListener('change', () => {
+        document.body.classList.toggle('dark-mode', toggle.checked);
     });
 
     // Función para configurar handlers de swipe en cualquier tarjeta
@@ -88,10 +75,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('mousemove', (e) => {
         const edgeDistance = window.innerWidth - e.clientX;
+        
         if (edgeDistance < 15 && !isDragging && !isHoveringSidebar) {
             isHoveringSidebar = true;
             sidebar.classList.add('active');
-        } else if (edgeDistance > 80 && !isDragging && isHoveringSidebar && e.target.id !== 'sidebar' && !sidebar.contains(e.target)) {
+        } 
+        else if (edgeDistance > 80 && !isDragging && isHoveringSidebar && e.target.id !== 'sidebar' && !sidebar.contains(e.target)) {
             isHoveringSidebar = false;
             sidebar.classList.remove('active');
         }
@@ -106,12 +95,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         isDragging = true;
+        
         if (sidebar.classList.contains('active')) {
             sidebar.classList.remove('active');
         }
+        
         if (e.type === 'mousedown') {
             e.preventDefault();
         }
+        
         if (e.type === 'touchstart') {
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
@@ -119,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             startX = e.clientX;
             startY = e.clientY;
         }
+        
         offsetX = 0;
         offsetY = 0;
         card.style.transition = 'none';
@@ -129,6 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleMove(e) {
         if (expandedView) return;
         if (!isDragging) return;
+        
+        // Actualizar referencia a la tarjeta actual
+        card = document.getElementById('project-card');
+        if (!card) return;
+        
         let currentX, currentY;
         if (e.type === 'touchmove') {
             e.preventDefault();
@@ -138,13 +136,14 @@ document.addEventListener('DOMContentLoaded', () => {
             currentX = e.clientX;
             currentY = e.clientY;
         }
-
+        
         offsetX = currentX - startX;
         offsetY = currentY - startY;
-
+        
         const rotate = offsetX * 0.1;
         card.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${rotate}deg)`;
-
+        
+        // Mostrar indicadores
         statusIndicators.style.opacity = '1';
         if (offsetX > 50) {
             likeIndicator.style.opacity = '1';
@@ -174,9 +173,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!card) return;
         
         isDragging = false;
-
+        
         card.style.transition = 'transform 0.5s ease';
         statusIndicators.style.opacity = '0';
+        
+        console.log('Drag terminado con offset:', offsetX, offsetY);
+        
         if (offsetX > 100) {
             card.style.transform = `translate(${window.innerWidth}px, ${offsetY}px) rotate(30deg)`;
             setTimeout(() => {
@@ -185,7 +187,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 500);
         } else if (offsetX < -100) {
             card.style.transform = `translate(-${window.innerWidth}px, ${offsetY}px) rotate(-30deg)`;
-            setTimeout(resetCard, 500);
+            setTimeout(() => {
+                resetCard();
+                handleSwipe('left');
+            }, 500);
         } else if (offsetY < -100) {
             card.style.transition = 'transform 0.5s ease';
             card.style.transform = `translate(0px, -${window.innerHeight}px) rotate(0deg)`;
@@ -197,6 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.transition = 'none';
                 card.style.opacity = '0';
                 card.style.transform = 'translate(0, 0) rotate(0deg)';
+                card.style.transform = 'translate(0, 0)';
                 card.style.transition = 'opacity 0.3s ease';
                 card.style.opacity = '1';
             }, 500);
@@ -206,6 +212,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resetCard() {
+        card = document.getElementById('project-card');
+        if (!card) return;
+        
         card.style.transition = 'none';
         card.style.opacity = '0';
         card.style.transform = 'translate(0, 0) rotate(0deg)';
@@ -223,4 +232,14 @@ document.addEventListener('DOMContentLoaded', () => {
             expandedView = false;
         }, 400);
     });
+
+    function handleSwipe(direction) {
+        if (window.projectsManager) {
+            window.projectsManager.handleCardSwipe(direction);
+        }
+    }
+
+    // Hacer funciones disponibles globalmente
+    window.handleSwipe = handleSwipe;
+    window.setupSwipeHandlers = setupSwipeHandlers;
 });
