@@ -1163,10 +1163,105 @@ body.dark-mode .like-indicator , body.dark-mode .dislike-indicator {
     opacity: 1;
 }
 
-/* Animación sutil para el mensaje */
 .no-projects-message {
     animation: fadeInUp 0.6s ease-out;
 }
+
+.edit-mode .tech-item input[type="text"] {
+    width: auto;
+    min-width: 60px;
+    max-width: 100%;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: inherit;
+    padding: 2px 6px;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.edit-mode .tech-item select {
+    width: auto;
+    min-width: 80px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: inherit;
+    padding: 2px 4px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.edit-mode .tech-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.edit-mode .tech-item input[type="text"]:focus {
+    outline: none;
+    border-color: rgba(255,255,255,0.6);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.1);
+}
+
+.edit-mode .tech-item select:focus {
+    outline: none;
+    border-color: rgba(255,255,255,0.6);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.1);
+}
+
+.expanded-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.edit-profile-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.edit-profile-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.edit-profile-btn:active {
+    transform: translateY(0);
+}
+
+/* Modo de edición */
+.edit-mode input, 
+.edit-mode textarea, 
+.edit-mode select {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.edit-mode .section-content {
+    min-height: 100px;
+}
+
+.edit-mode .stat-value input {
+    width: 100%;
+    max-width: 150px;
+}
+
 
 @keyframes fadeInUp {
     from {
@@ -1414,6 +1509,24 @@ body.dark-mode .viewing-progress {
 
 
 @media (max-width: 768px) {
+    .expanded-status {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .edit-profile-btn {
+        width: 100%;
+        max-width: 200px;
+        padding: 8px 16px;
+        font-size: 14px;
+        text-align: center;
+    }
+    
+    .status-badge {
+        margin-bottom: 0;
+    }
+
     #expanded-card {
         margin-top: 80px; 
         height: 80%;

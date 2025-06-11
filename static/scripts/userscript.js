@@ -66,6 +66,466 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+
+    let isEditMode = false;
+
+    function initEditButton() {
+        const editBtn = document.getElementById('edit-profile-btn');
+        if (editBtn) {
+            editBtn.addEventListener('click', toggleEditMode);
+        }
+    }
+
+    function toggleEditMode() {
+        const editBtn = document.getElementById('edit-profile-btn');
+        const expandedCard = document.getElementById('expanded-card');
+        
+        isEditMode = !isEditMode;
+        
+        if (isEditMode) {
+            editBtn.textContent = 'Guardar';
+            editBtn.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+            expandedCard.classList.add('edit-mode');
+            makeEditable();
+        } else {
+            editBtn.textContent = 'Editar';
+            editBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            expandedCard.classList.remove('edit-mode');
+            saveChanges();
+            makeReadOnly();
+        }
+    }
+
+    // Función auxiliar para calcular el ancho del texto
+    function getTextWidth(text, font) {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        context.font = font;
+        return context.measureText(text).width;
+    }
+
+function makeEditable() {
+    const title = document.querySelector('.expanded-title');
+    if (title) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = title.textContent;
+        input.className = 'title-input';
+        
+        // Obtener el estilo computado del título original
+        const computedStyle = window.getComputedStyle(title);
+        const fontSize = computedStyle.fontSize;
+        const fontWeight = computedStyle.fontWeight;
+        const fontFamily = computedStyle.fontFamily;
+        
+        // Calcular el ancho del texto
+        const font = `${fontWeight} ${fontSize} ${fontFamily}`;
+        const textWidth = getTextWidth(title.textContent, font);
+        
+        // Configurar el input con el mismo estilo y ancho
+        input.style.cssText = `
+            font-size: ${fontSize};
+            font-weight: ${fontWeight};
+            font-family: ${fontFamily};
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: inherit;
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: ${Math.max(textWidth + 20, 150)}px;
+            min-width: 150px;
+            max-width: 80%;
+        `;
+        
+        // Función para ajustar el ancho dinámicamente mientras se escribe
+        input.addEventListener('input', function() {
+            const currentWidth = getTextWidth(this.value || 'A', font);
+            const newWidth = Math.max(currentWidth + 20, 150);
+            this.style.width = Math.min(newWidth, window.innerWidth * 0.8) + 'px';
+        });
+        
+        title.replaceWith(input);
+        
+        // Enfocar el input y seleccionar el texto
+        setTimeout(() => {
+            input.focus();
+            input.select();
+        }, 50);
+    }
+    
+    document.querySelectorAll('.stat-value').forEach(stat => {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = stat.textContent;
+        input.style.background = 'transparent';
+        input.style.border = '1px solid rgba(255,255,255,0.3)';
+        input.style.color = 'inherit';
+        input.style.padding = '2px 4px';
+        stat.innerHTML = '';
+        stat.appendChild(input);
+    });
+    
+    const aboutSection = document.querySelector('.section-content');
+    if (aboutSection) {
+        const textarea = document.createElement('textarea');
+        textarea.value = aboutSection.textContent.trim();
+        textarea.rows = 6;
+        textarea.style.width = '100%';
+        textarea.style.resize = 'vertical';
+        textarea.style.background = 'rgba(255,255,255,0.1)';
+        textarea.style.border = '1px solid rgba(255,255,255,0.3)';
+        textarea.style.color = 'inherit';
+        textarea.style.padding = '8px';
+        textarea.style.fontFamily = 'inherit';
+        aboutSection.replaceWith(textarea);
+    }
+    
+    document.querySelectorAll('.objectives-list .objective-item span').forEach(contact => {
+        if (contact.textContent.includes(':')) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = contact.textContent;
+            input.style.width = '100%';
+            input.style.background = 'transparent';
+            input.style.border = '1px solid rgba(255,255,255,0.3)';
+            input.style.color = 'inherit';
+            input.style.padding = '4px';
+            contact.replaceWith(input);
+        }
+    });
+    
+    const objectivesList = document.querySelectorAll('.objectives-list')[1]; 
+    if (objectivesList) {
+        objectivesList.querySelectorAll('.objective-item span').forEach(objective => {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = objective.textContent;
+            input.style.width = '100%';
+            input.style.background = 'transparent';
+            input.style.border = '1px solid rgba(255,255,255,0.3)';
+            input.style.color = 'inherit';
+            input.style.padding = '4px';
+            objective.replaceWith(input);
+        });
+    }
+    
+document.querySelectorAll('.tech-item').forEach(techItem => {
+    const techName = techItem.querySelector('.tech-name');
+    const techLevel = techItem.querySelector('.tech-level');
+    
+    if (techName) {
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.value = techName.textContent;
+        nameInput.style.cssText = `
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: inherit;
+            padding: 2px 6px;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            width: ${Math.max(techName.textContent.length * 8 + 20, 60)}px;
+            min-width: 60px;
+            max-width: 150px;
+        `;
+        
+        nameInput.addEventListener('input', function() {
+            const minWidth = 60;
+            const maxWidth = 150;
+            const calculatedWidth = Math.max(this.value.length * 8 + 20, minWidth);
+            this.style.width = Math.min(calculatedWidth, maxWidth) + 'px';
+        });
+        
+        techName.replaceWith(nameInput);
+    }
+    
+    if (techLevel) {
+        const levelSelect = document.createElement('select');
+        levelSelect.innerHTML = `
+            <option value="Básico">Básico</option>
+            <option value="Intermedio">Intermedio</option>
+            <option value="Avanzado">Avanzado</option>
+            <option value="Experto">Experto</option>
+        `;
+        levelSelect.value = techLevel.textContent;
+        levelSelect.style.cssText = `
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: inherit;
+            padding: 2px 4px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            width: auto;
+            min-width: 80px;
+        `;
+        techLevel.replaceWith(levelSelect);
+    }
+});
+    
+    const certificationsList = document.querySelectorAll('.objectives-list')[2]; 
+    if (certificationsList) {
+        certificationsList.querySelectorAll('.objective-item span').forEach(cert => {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = cert.textContent;
+            input.style.width = '100%';
+            input.style.background = 'transparent';
+            input.style.border = '1px solid rgba(255,255,255,0.3)';
+            input.style.color = 'inherit';
+            input.style.padding = '4px';
+            cert.replaceWith(input);
+        });
+    }
+    
+    document.querySelectorAll('.skill-badge').forEach(skill => {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = skill.textContent;
+        input.style.background = 'transparent';
+        input.style.border = '1px solid rgba(255,255,255,0.3)';
+        input.style.color = 'inherit';
+        input.style.padding = '4px 8px';
+        input.style.borderRadius = '12px';
+        input.style.fontSize = '0.8rem';
+        input.style.textAlign = 'center';
+        skill.replaceWith(input);
+    });
+    
+    addAddButtons();
+}
+
+function addAddButtons() {
+    const contactsSection = document.querySelectorAll('.objectives-list')[0];
+    if (contactsSection && !contactsSection.querySelector('.add-btn')) {
+        const addContactBtn = createAddButton('Agregar Contacto', () => addNewContact());
+        contactsSection.appendChild(addContactBtn);
+    }
+    
+    const objectivesSection = document.querySelectorAll('.objectives-list')[1];
+    if (objectivesSection && !objectivesSection.querySelector('.add-btn')) {
+        const addObjectiveBtn = createAddButton('Agregar Objetivo', () => addNewObjective());
+        objectivesSection.appendChild(addObjectiveBtn);
+    }
+    
+    const techGrid = document.querySelector('.tech-grid');
+    if (techGrid && !techGrid.querySelector('.add-btn')) {
+        const addTechBtn = createAddButton('Agregar Tecnología', () => addNewTech());
+        techGrid.appendChild(addTechBtn);
+    }
+    
+    const certSection = document.querySelectorAll('.objectives-list')[2];
+    if (certSection && !certSection.querySelector('.add-btn')) {
+        const addCertBtn = createAddButton('Agregar Certificación', () => addNewCertification());
+        certSection.appendChild(addCertBtn);
+    }
+    
+    const skillsGrid = document.querySelector('.skills-grid');
+    if (skillsGrid && !skillsGrid.querySelector('.add-btn')) {
+        const addSkillBtn = createAddButton('Agregar Interés', () => addNewInterest());
+        skillsGrid.appendChild(addSkillBtn);
+    }
+}
+
+function createAddButton(text, onClick) {
+    const btn = document.createElement('button');
+    btn.textContent = '+ ' + text;
+    btn.className = 'add-btn';
+    btn.style.cssText = `
+        background: rgba(255,255,255,0.1);
+        border: 2px dashed rgba(255,255,255,0.3);
+        color: inherit;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+    `;
+    btn.onmouseover = () => btn.style.background = 'rgba(255,255,255,0.2)';
+    btn.onmouseout = () => btn.style.background = 'rgba(255,255,255,0.1)';
+    btn.onclick = onClick;
+    return btn;
+}
+
+function addNewContact() {
+    const contactsList = document.querySelectorAll('.objectives-list')[0];
+    const newItem = document.createElement('div');
+    newItem.className = 'objective-item';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Tipo: información (ej: Email: ejemplo@gmail.com)';
+    input.style.cssText = 'width: 100%; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: inherit; padding: 4px;';
+    newItem.appendChild(input);
+    contactsList.insertBefore(newItem, contactsList.querySelector('.add-btn'));
+}
+
+function addNewObjective() {
+    const objectivesList = document.querySelectorAll('.objectives-list')[1];
+    const newItem = document.createElement('div');
+    newItem.className = 'objective-item';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Nuevo objetivo profesional...';
+    input.style.cssText = 'width: 100%; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: inherit; padding: 4px;';
+    newItem.appendChild(input);
+    objectivesList.insertBefore(newItem, objectivesList.querySelector('.add-btn'));
+}
+
+function addNewTech() {
+    const techGrid = document.querySelector('.tech-grid');
+    const newTech = document.createElement('div');
+    newTech.className = 'tech-item';
+    newTech.innerHTML = `
+        <span class="tech-icon-expanded">?</span>
+        <div class="tech-details">
+            <input type="text" placeholder="Tecnología" style="
+                background: transparent; 
+                border: 1px solid rgba(255,255,255,0.3); 
+                color: inherit; 
+                padding: 2px 6px; 
+                font-size: 0.9rem;
+                border-radius: 4px;
+                width: 80px;
+                min-width: 60px;
+                max-width: 150px;
+            ">
+            <select style="
+                background: rgba(255,255,255,0.1); 
+                border: 1px solid rgba(255,255,255,0.3); 
+                color: inherit; 
+                padding: 2px 4px; 
+                font-size: 0.8rem;
+                border-radius: 4px;
+                width: auto;
+                min-width: 80px;
+            ">
+                <option value="Básico">Básico</option>
+                <option value="Intermedio">Intermedio</option>
+                <option value="Avanzado">Avanzado</option>
+                <option value="Experto">Experto</option>
+            </select>
+        </div>
+    `;
+    
+    const newInput = newTech.querySelector('input[type="text"]');
+    newInput.addEventListener('input', function() {
+        const minWidth = 60;
+        const maxWidth = 150;
+        const calculatedWidth = Math.max(this.value.length * 8 + 20, minWidth);
+        this.style.width = Math.min(calculatedWidth, maxWidth) + 'px';
+    });
+    
+    techGrid.insertBefore(newTech, techGrid.querySelector('.add-btn'));
+}
+
+function addNewCertification() {
+    const certList = document.querySelectorAll('.objectives-list')[2];
+    const newItem = document.createElement('div');
+    newItem.className = 'objective-item';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Nombre de la certificación - Institución (Año)';
+    input.style.cssText = 'width: 100%; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: inherit; padding: 4px;';
+    newItem.appendChild(input);
+    certList.insertBefore(newItem, certList.querySelector('.add-btn'));
+}
+
+function addNewInterest() {
+    const skillsGrid = document.querySelector('.skills-grid');
+    const newSkill = document.createElement('input');
+    newSkill.type = 'text';
+    newSkill.placeholder = 'Nueva área de interés';
+    newSkill.style.cssText = `
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.3);
+        color: inherit;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        text-align: center;
+        min-width: 120px;
+    `;
+    skillsGrid.insertBefore(newSkill, skillsGrid.querySelector('.add-btn'));
+}
+
+
+function makeReadOnly() {
+    const titleInput = document.querySelector('.title-input');
+    if (titleInput) {
+        const h2 = document.createElement('h2');
+        h2.className = 'expanded-title';
+        h2.textContent = titleInput.value;
+        titleInput.replaceWith(h2);
+    }
+    
+    document.querySelectorAll('.stat-value input').forEach(input => {
+        const parent = input.parentNode;
+        parent.innerHTML = input.value;
+    });
+    
+    const textarea = document.querySelector('textarea');
+    if (textarea) {
+        const p = document.createElement('p');
+        p.className = 'section-content';
+        p.innerHTML = textarea.value.replace(/\n/g, '<br>');
+        textarea.replaceWith(p);
+    }
+    
+
+    document.querySelectorAll('.objectives-list input').forEach(input => {
+        if (input.value.trim()) {
+            const span = document.createElement('span');
+            span.textContent = input.value;
+            input.replaceWith(span);
+        } else {
+            input.parentNode.remove(); 
+        }
+    });
+    
+    document.querySelectorAll('.tech-item').forEach(techItem => {
+        const nameInput = techItem.querySelector('input[type="text"]');
+        const levelSelect = techItem.querySelector('select');
+        
+        if (nameInput && levelSelect) {
+            const techDetails = techItem.querySelector('.tech-details');
+            if (nameInput.value.trim() && levelSelect.value) {
+                techDetails.innerHTML = `
+                    <span class="tech-name">${nameInput.value}</span>
+                    <span class="tech-level">${levelSelect.value}</span>
+                `;
+            } else {
+                techItem.remove(); 
+            }
+        }
+    });
+    
+    document.querySelectorAll('.skills-grid input').forEach(input => {
+        if (input.value.trim()) {
+            const skillBadge = document.createElement('div');
+            skillBadge.className = 'skill-badge';
+            skillBadge.textContent = input.value;
+            input.replaceWith(skillBadge);
+        } else {
+            input.remove(); 
+        }
+    });
+    
+    document.querySelectorAll('.add-btn').forEach(btn => btn.remove());
+}
+    function saveChanges() {
+        console.log('Guardando cambios del perfil...');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initEditButton();
+    });
+
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.project-card')) {
+            setTimeout(initEditButton, 100); 
+        }
+    });
+
     function handleStart(e) {
         isDragging = true;
 
@@ -101,7 +561,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         offsetY = currentY - startY;
 
-        // Solo permitir movimiento hacia arriba
         if (offsetY > 0) offsetY = 0;
 
         card.style.transform = `translateY(${offsetY}px)`;
