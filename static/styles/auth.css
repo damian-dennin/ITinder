@@ -279,13 +279,13 @@ body.dark-mode .testimonial-author {
 .forms-section {
     flex: 0 0 450px;
     padding: 40px;
+    padding-right: 60px;
     display: flex;
-    align-items: center;
     justify-content: center;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border-radius: 25px 0 0 25px;
-    margin: 20px 20px 20px 0;
+    margin: 20px 0px 20px 0;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 
@@ -418,6 +418,15 @@ body.dark-mode .form-input::placeholder {
     padding: 5px;
     color: #666;
     font-size: 1.2rem;
+}
+
+.password-toggle-icon{ 
+    background-color: var(--violetaFondoClaro);
+    border-radius: 25%;
+}
+body.dark-mode .password-toggle-icon{ 
+    background-color: var(--violetaMedio); 
+    border-radius: 25%;
 }
 
 body.dark-mode .password-toggle {
@@ -617,7 +626,7 @@ body.dark-mode .form-help {
 .notification {
     position: fixed;
     top: 20px;
-    right: -400px;
+    right: 10px;
     background: white;
     padding: 20px;
     border-radius: 12px;
@@ -734,13 +743,6 @@ body.dark-mode .intro-text {
     }
 }
 
-@media (min-width: 769px) {
-    .forms-section {
-    position: sticky;
-    top: 20px;
-    align-self: flex-start;
-    }
-}
 
 @media (max-width: 768px) {
     .auth-header {
@@ -797,7 +799,7 @@ body.dark-mode .intro-text {
     
     .notification {
         min-width: 300px;
-        right: -350px;
+        right: 15px;
     }
     
     .notification.show {
