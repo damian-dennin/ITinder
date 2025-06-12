@@ -1511,10 +1511,9 @@ body.dark-mode .viewing-progress {
 
 .create-project-container {
     position: fixed;
-    bottom: 100px;
+    bottom: 7%;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 3000;
 }
 
 .create-project-btn {
