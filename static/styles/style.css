@@ -1,9 +1,12 @@
 :root {
-    --violetaOscuro: "#613A67";
-    --violetaClaro: "#D4BDE8";
-    --violetaFondoClaro: :"#D4BDE8";
-    --violetaFondoOscuro: "#230042";
-    --violetaMedio: "#C27BFF";
+    --violetaOscuro: #613A67;
+    --violetaClaro: #D4BDE8;
+    --violetaFondoClaro: #D4BDE8;
+    --violetaFondoOscuro: #230042;
+    --violetaMedio: #C27BFF;
+    --white: #ffffff;
+    --shadow: rgba(0, 0, 0, 0.2);
+    --shadow-dark: rgba(0, 0, 0, 0.4);
 }
 
 @media (min-width:0px){ /* Feed main*/
@@ -1511,11 +1514,11 @@ body.dark-mode .viewing-progress {
     bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 10;
+    z-index: 3000;
 }
 
 .create-project-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--violetaOscuro) 0%, var(--violetaMedio) 100%);
     border: none;
     border-radius: 50px;
     padding: 15px 25px;
@@ -1547,9 +1550,8 @@ body.dark-mode .viewing-progress {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
-    z-index: 1000;
+    z-index: 3000;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1564,7 +1566,7 @@ body.dark-mode .viewing-progress {
 }
 
 .create-content {
-    background: var(--card-bg, #ffffff);
+    background: var(--card-bg, var(--violetaOscuro));
     border-radius: 20px;
     width: 90%;
     max-width: 800px;
@@ -1588,7 +1590,7 @@ body.dark-mode .viewing-progress {
     font-size: 30px;
     color: var(--text-color, #333);
     cursor: pointer;
-    z-index: 1001;
+    z-index: 3001;
 }
 
 .create-header {
