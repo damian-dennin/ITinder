@@ -213,6 +213,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         isDragging = true;
+
+        createProjectBtn.style.transition = 'opacity 0.3s ease';
+        createProjectBtn.style.opacity = '0';
         
         if (sidebar.classList.contains('active')) {
             sidebar.classList.remove('active');
@@ -291,6 +294,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!card) return;
         
         isDragging = false;
+
+        createProjectBtn.style.transition = 'opacity 0.3s ease';
+        createProjectBtn.style.opacity = '1';
         
         card.style.transition = 'transform 0.5s ease';
         statusIndicators.style.opacity = '0';
