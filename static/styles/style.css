@@ -1511,10 +1511,15 @@ body.dark-mode .viewing-progress {
 
 .create-project-container {
     position: fixed;
-    bottom: 7%;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-}
+    z-index: 1000;
+    width: 100%;
+    max-width: 400px;
+    padding: 0 20px;
+    box-sizing: border-box;
+}   
 
 .create-project-btn {
     background: linear-gradient(135deg, var(--violetaOscuro) 0%, var(--violetaMedio) 100%);
@@ -1527,9 +1532,14 @@ body.dark-mode .viewing-progress {
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
+    width: 100%;
+    min-height: 50px;
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
     transition: all 0.3s ease;
+    white-space: nowrap;
+    text-align: center;
 }
 
 .create-project-btn:hover {
@@ -1538,9 +1548,11 @@ body.dark-mode .viewing-progress {
 }
 
 .create-icon {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
+    line-height: 1;
 }
+
 
 .create-project-card {
     position: fixed;
@@ -1817,12 +1829,12 @@ body.dark-mode .create-content {
         display: none;
     }
     
-    /* Mostrar header móvil */
+
     .mobile-header {
         display: flex;
     }
     
-    /* Ajustar body para compensar el header fijo */
+
     body {
         padding-top: 60px;
     }
@@ -1831,12 +1843,12 @@ body.dark-mode .create-content {
         padding-top: 60px;
     }
     
-    /* Ajustar logo container para que no se superponga con el header */
+
     .logo-container {
         top: 70px;
     }
     
-    /* El resto de tus estilos móviles existentes... */
+  
     .card-container {
         width: 95%;
         height: 80%;
@@ -1893,5 +1905,96 @@ body.dark-mode .create-content {
     }
     .card-title { 
         margin-left: 10%;
+    }
+
+    .create-project-container {
+        bottom: 15px;
+        max-width: 350px;
+        padding: 0 15px;
+    }
+    
+    .create-project-btn {
+        padding: 12px 20px;
+        font-size: 15px;
+        min-height: 48px;
+    }
+    
+    .create-icon {
+        font-size: 16px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .create-project-container {
+        bottom: 10px;
+        max-width: calc(100% - 20px);
+        padding: 0 10px;
+    }
+    
+    .create-project-btn {
+        padding: 12px 18px;
+        font-size: 14px;
+        min-height: 45px;
+        gap: 8px;
+    }
+    
+    .create-icon {
+        font-size: 16px;
+    }
+}
+
+
+@media screen and (max-width: 360px) {
+    .create-project-container {
+        bottom: 8px;
+        padding: 0 8px;
+    }
+    
+    .create-project-btn {
+        padding: 10px 15px;
+        font-size: 13px;
+        min-height: 42px;
+        gap: 6px;
+        border-radius: 40px;
+    }
+    
+    .create-icon {
+        font-size: 14px;
+    }
+}
+
+
+@media screen and (min-width: 1200px) {
+    .create-project-container {
+        max-width: 300px;
+    }
+}
+
+
+@media screen and (max-width: 768px) {
+    .create-project-container {
+        bottom: calc(10px + env(safe-area-inset-bottom));
+    }
+}
+
+
+.create-project-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+body {
+    padding-bottom: 80px; 
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        padding-bottom: 70px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        padding-bottom: 65px;
     }
 }
