@@ -1660,13 +1660,6 @@ body.dark-mode .viewing-progress {
     border-top: 1px solid var(--border-color, #eee);
 }
 
-body.dark-mode .create-content {
-    --card-bg: #2a2a2a;
-    --text-color: #ffffff;
-    --border-color: #404040;
-    --input-bg: #333333;
-}   
-
 
 .image-upload-container {
     position: relative;
@@ -1753,32 +1746,6 @@ body.dark-mode .create-content {
     background: rgba(0, 0, 0, 0.9);
     transform: scale(1.1);
 }
-
-.dark-mode .remove-image {
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.dark-mode .remove-image:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
-.dark-mode .image-preview {
-    border-color: #555;
-    background-color: #2a2a2a;
-}
-
-.dark-mode .image-preview:hover {
-    border-color: #007bff;
-    background-color: #1a1a2e;
-}
-
-.dark-mode .image-placeholder {
-    color: #ccc;
-}
-
 
 
 @media (max-width: 768px) {
