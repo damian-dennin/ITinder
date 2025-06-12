@@ -281,6 +281,21 @@
             </div>
 
             <div class="form-group">
+                <label for="project-image">Imagen del Proyecto</label>
+                <div class="image-upload-container">
+                    <input type="file" id="project-image" accept="image/*" class="image-input">
+                    <div class="image-preview" id="image-preview">
+                        <div class="image-placeholder">
+                            <span class="upload-icon">📁</span>
+                            <span class="upload-text">Seleccionar imagen</span>
+                        </div>
+                        <img id="preview-img" class="preview-image" style="display: none;">
+                        <button type="button" class="remove-image" id="remove-image" style="display: none;">×</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label for="technologies">Tecnologías (separadas por comas)</label>
                 <input type="text" id="technologies" placeholder="Python, React, Node.js, MongoDB">
             </div>

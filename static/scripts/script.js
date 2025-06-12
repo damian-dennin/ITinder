@@ -19,12 +19,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelCreate = document.getElementById('cancel-create');
     const createForm = document.getElementById('create-form');
 
+
+    const projectImageInput = document.getElementById('project-image');
+    const imagePreview = document.getElementById('image-preview');
+    const previewImg = document.getElementById('preview-img');
+    const removeImageBtn = document.getElementById('remove-image');
+    const imagePlaceholder = imagePreview.querySelector('.image-placeholder');
+    
+    let selectedImageFile = null;
+
     let startX = 0;
     let startY = 0;
     let offsetX = 0;
     let offsetY = 0;
     let isDragging = false;
     let isHoveringSidebar = false;
+
+
+    projectImageInput?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            selectedImageFile = file;
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';
+                removeImageBtn.style.display = 'block';
+                imagePlaceholder.style.display = 'none';
+            };
+            
+            reader.readAsDataURL(file);
+        }
+    });
+
+    removeImageBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        selectedImageFile = null;
+        projectImageInput.value = '';
+        previewImg.src = '';
+        previewImg.style.display = 'none';
+        removeImageBtn.style.display = 'none';
+        imagePlaceholder.style.display = 'flex';
+    });
+
+    function closeCreateModal() {
+        createProjectCard.classList.remove('visible');
+        setTimeout(() => {
+            createProjectCard.classList.add('hidden');
+            createForm.reset();
+            if (selectedImageFile) {
+                selectedImageFile = null;
+                previewImg.src = '';
+                previewImg.style.display = 'none';
+                removeImageBtn.style.display = 'none';
+                imagePlaceholder.style.display = 'flex';
+            }
+        }, 400);
+    }
+
 
     function closeCreateModal() {
         createProjectCard.classList.remove('visible');
@@ -64,7 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
             type: document.getElementById('project-type').value,
             description: document.getElementById('description').value,
             technologies: document.getElementById('technologies').value.split(',').map(t => t.trim()),
-            skills: document.getElementById('skills').value.split(',').map(s => s.trim())
+            skills: document.getElementById('skills').value.split(',').map(s => s.trim()),
+            image: selectedImageFile // Agregar la imagen al formData
         };
 
         console.log('Nuevo proyecto creado:', formData);
