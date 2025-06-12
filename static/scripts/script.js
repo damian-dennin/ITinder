@@ -12,6 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     const sidebarTrigger = document.getElementById('sidebar-trigger');
     
+
+    const createProjectBtn = document.getElementById('create-project-btn');
+    const createProjectCard = document.getElementById('create-project-card');
+    const closeCreate = document.getElementById('close-create');
+    const cancelCreate = document.getElementById('cancel-create');
+    const createForm = document.getElementById('create-form');
+
     let startX = 0;
     let startY = 0;
     let offsetX = 0;
@@ -19,27 +26,69 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDragging = false;
     let isHoveringSidebar = false;
 
-    // modo oscuro o claro
+    function closeCreateModal() {
+        createProjectCard.classList.remove('visible');
+        setTimeout(() => {
+            createProjectCard.classList.add('hidden');
+            createForm.reset();
+        }, 400);
+    }
+
+    // Event listeners para crear proyecto
+    closeCreate?.addEventListener('click', closeCreateModal);
+    cancelCreate?.addEventListener('click', closeCreateModal);
+
+    createProjectBtn?.addEventListener('click', () => {
+        createProjectCard.classList.remove('hidden');
+        setTimeout(() => {
+            createProjectCard.classList.add('visible');
+        }, 10);
+    });
+
+    createProjectCard?.addEventListener('click', (e) => {
+        if (e.target === createProjectCard) {
+            closeCreateModal();
+        }
+    });
+
+    // Corregir el form submit (había código duplicado)
+    createForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const formData = {
+            name: document.getElementById('project-name').value,
+            status: document.getElementById('project-status').value,
+            teamSize: document.getElementById('team-size').value,
+            duration: document.getElementById('duration').value,
+            language: document.getElementById('language').value,
+            type: document.getElementById('project-type').value,
+            description: document.getElementById('description').value,
+            technologies: document.getElementById('technologies').value.split(',').map(t => t.trim()),
+            skills: document.getElementById('skills').value.split(',').map(s => s.trim())
+        };
+
+        console.log('Nuevo proyecto creado:', formData);
+        alert('¡Proyecto creado exitosamente!');
+        closeCreateModal();
+    });
+    
+    // Theme toggles
     const toggle = document.getElementById('theme-toggle');
     const togglemo = document.getElementById('theme-togglemo');
 
-    // Función para sincronizar ambos toggles
     function syncThemeToggles(sourceToggle, targetToggle) {
         targetToggle.checked = sourceToggle.checked;
         document.body.classList.toggle('dark-mode', sourceToggle.checked);
     }
 
-    // Event listener para el primer toggle
     toggle?.addEventListener('change', () => {
         syncThemeToggles(toggle, togglemo);
     });
 
-    // Event listener para el segundo toggle (móvil)
     togglemo?.addEventListener('change', () => {
         syncThemeToggles(togglemo, toggle);
     });
 
-    // Función para configurar handlers de swipe en cualquier tarjeta
     function setupSwipeHandlers(cardElement) {
         if (!cardElement) {
             console.warn('No se puede configurar swipe handlers: elemento no encontrado');
@@ -74,14 +123,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mouseup', handleEnd);
 
     // Sidebar trigger hover handler
-    sidebarTrigger.addEventListener('mouseenter', () => {
+    sidebarTrigger?.addEventListener('mouseenter', () => {
         if (!isDragging) {
             isHoveringSidebar = true;
             sidebar.classList.add('active');
         }
     });
 
-    sidebar.addEventListener('mouseleave', () => {
+    sidebar?.addEventListener('mouseleave', () => {
         isHoveringSidebar = false;
         sidebar.classList.remove('active');
     });
@@ -238,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 50);
     }
 
-    closeExpanded.addEventListener('click', () => {
+    closeExpanded?.addEventListener('click', () => {
         expandedCard.classList.remove('visible');
         setTimeout(() => {
             expandedCard.classList.add('hidden');
