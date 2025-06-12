@@ -1580,19 +1580,6 @@ body.dark-mode .viewing-progress {
 .create-project-card.visible .create-content {
     transform: translateY(0);
 }
-
-.close-create {
-    position: absolute;
-    top: 20px;
-    right: 25px;
-    background: none;
-    border: none;
-    font-size: 30px;
-    color: var(--text-color, #333);
-    cursor: pointer;
-    z-index: 3001;
-}
-
 .create-header {
     padding: 30px 30px 20px;
     border-bottom: 1px solid var(--border-color, #eee);
@@ -1601,7 +1588,7 @@ body.dark-mode .viewing-progress {
 .create-title {
     font-size: 24px;
     font-weight: 700;
-    color: var(--text-color, #333);
+    color: var(--text-color, var(--violetaClaro));
     margin: 0;
 }
 
@@ -1625,7 +1612,7 @@ body.dark-mode .viewing-progress {
 
 .form-group label {
     font-weight: 600;
-    color: var(--text-color, #333);
+    color: var(--text-color, var(--violetaClaro));
     font-size: 14px;
 }
 
@@ -1637,7 +1624,7 @@ body.dark-mode .viewing-progress {
     border-radius: 10px;
     font-size: 14px;
     background: var(--input-bg, #ffffff);
-    color: var(--text-color, #333);
+    color: var(black, var(--violetaClaro));
     transition: border-color 0.3s ease;
 }
 
