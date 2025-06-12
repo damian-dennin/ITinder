@@ -200,6 +200,7 @@ class AuthManager {
             isValid = false;
         } else if (password.length < 6) {
             document.getElementById('registerPasswordError').textContent = 'La contraseña debe tener al menos 6 caracteres';
+            this.showNotification('La contraseña debe tener al menos 6 caracteres.', 'error');
             isValid = false;
         }
 
@@ -210,6 +211,7 @@ class AuthManager {
             isValid = false;
         } else if (password !== confirmPassword) {
             document.getElementById('confirmPasswordError').textContent = 'Las contraseñas no coinciden';
+            this.showNotification('Las contraseñas ingresadas no coinciden.', 'error');
             isValid = false;
         }
 
