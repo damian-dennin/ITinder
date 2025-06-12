@@ -7,11 +7,48 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     const sidebarTrigger = document.getElementById('sidebar-trigger');
 
+
+    const profileImageInput = document.getElementById('profile-image-input');
+    const profileImagePreview = document.querySelector('.user-card-image');
+    let selectedProfileImage = null;
+
     let startY = 0;
     let offsetY = 0;
     let isDragging = false;
     let isHoveringSidebar = false;
+    let selectedProfileImageFile = null
 
+
+    function handleProfileImageUpload() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.style.display = 'none';
+    
+    input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            selectedProfileImage = file;
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                // Actualizar todas las imágenes de perfil
+                document.querySelectorAll('.user-card-image').forEach(img => {
+                    img.style.backgroundImage = `url(${e.target.result})`;
+                    img.style.backgroundSize = 'cover';
+                    img.style.backgroundPosition = 'center';
+                });
+            };
+            
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    document.body.appendChild(input);
+    input.click();
+    document.body.removeChild(input);
+    }
+    
     // Controladores de tema oscuro corregidos
     const toggle = document.getElementById('theme-toggle');
     const togglemo = document.getElementById('theme-togglemo');
@@ -41,6 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('mousedown', handleStart);
     document.addEventListener('mousemove', handleMove);
     document.addEventListener('mouseup', handleEnd);
+
+
+    document.querySelectorAll('.user-card-image').forEach(img => {
+    img.addEventListener('click', handleFeedProfileImageUpload);
+    img.style.cursor = 'pointer';
+    });
 
     // Sidebar trigger hover handler
     sidebarTrigger.addEventListener('mouseenter', () => {
@@ -104,6 +147,36 @@ document.addEventListener('DOMContentLoaded', () => {
         return context.measureText(text).width;
     }
 
+
+    function handleFeedProfileImageUpload() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.style.display = 'none';
+    
+    input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            selectedProfileImageFile = file;
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                document.querySelectorAll('.user-card-image').forEach(img => {
+                    img.style.backgroundImage = `url(${e.target.result})`;
+                    img.style.backgroundSize = 'cover';
+                    img.style.backgroundPosition = 'center';
+                });
+            };
+            
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    document.body.appendChild(input);
+    input.click();
+    document.body.removeChild(input);
+}
+
 function makeEditable() {
     const title = document.querySelector('.expanded-title');
     if (title) {
@@ -153,6 +226,63 @@ function makeEditable() {
         }, 50);
     }
     
+    const profileImages = document.querySelectorAll('.user-card-image');
+    profileImages.forEach(profileImg => {
+    if (!profileImg.querySelector('.upload-overlay')) {
+        const uploadOverlay = document.createElement('div');
+        uploadOverlay.className = 'upload-overlay';
+        uploadOverlay.innerHTML = `
+            <div class="upload-content">
+                <span class="upload-icon">📷</span>
+                <span class="upload-text">Cambiar Foto</span>
+            </div>
+        `;
+        uploadOverlay.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: inherit;
+        `;
+        
+        const uploadContent = uploadOverlay.querySelector('.upload-content');
+        uploadContent.style.cssText = `
+            text-align: center;
+            color: white;
+            font-size: 0.9rem;
+        `;
+        
+        const uploadIcon = uploadOverlay.querySelector('.upload-icon');
+        uploadIcon.style.cssText = `
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        `;
+        
+        profileImg.style.position = 'relative';
+        profileImg.appendChild(uploadOverlay);
+        
+        profileImg.addEventListener('mouseenter', () => {
+            uploadOverlay.style.opacity = '1';
+        });
+        
+        profileImg.addEventListener('mouseleave', () => {
+            uploadOverlay.style.opacity = '0';
+        });
+        
+        uploadOverlay.addEventListener('click', handleProfileImageUpload);
+    }
+    });
+
+
     document.querySelectorAll('.stat-value').forEach(stat => {
         const input = document.createElement('input');
         input.type = 'text';
@@ -525,6 +655,9 @@ function makeReadOnly() {
             setTimeout(initEditButton, 100); 
         }
     });
+
+    document.querySelectorAll('.upload-overlay').forEach(overlay => overlay.remove());
+
 
     function handleStart(e) {
         isDragging = true;
