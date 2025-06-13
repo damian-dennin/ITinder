@@ -78,12 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('mousedown', handleStart);
     document.addEventListener('mousemove', handleMove);
     document.addEventListener('mouseup', handleEnd);
-
-
-    document.querySelectorAll('.user-card-image').forEach(img => {
-    img.addEventListener('click', handleFeedProfileImageUpload);
-    img.style.cursor = 'pointer';
-    });
+;
 
     // Sidebar trigger hover handler
     sidebarTrigger.addEventListener('mouseenter', () => {
@@ -226,8 +221,7 @@ function makeEditable() {
         }, 50);
     }
     
-    const profileImages = document.querySelectorAll('.user-card-image');
-    profileImages.forEach(profileImg => {
+    document.querySelectorAll('.user-card-image').forEach(profileImg => {
     if (!profileImg.querySelector('.upload-overlay')) {
         const uploadOverlay = document.createElement('div');
         uploadOverlay.className = 'upload-overlay';
@@ -268,6 +262,7 @@ function makeEditable() {
         `;
         
         profileImg.style.position = 'relative';
+        profileImg.style.cursor = 'pointer'; // Agregar esta línea
         profileImg.appendChild(uploadOverlay);
         
         profileImg.addEventListener('mouseenter', () => {
@@ -280,7 +275,7 @@ function makeEditable() {
         
         uploadOverlay.addEventListener('click', handleProfileImageUpload);
     }
-    });
+});
 
 
     document.querySelectorAll('.stat-value').forEach(stat => {
@@ -641,6 +636,13 @@ function makeReadOnly() {
     });
     
     document.querySelectorAll('.add-btn').forEach(btn => btn.remove());
+    document.querySelectorAll('.upload-overlay').forEach(overlay => overlay.remove());
+    document.querySelectorAll('.user-card-image').forEach(img => {
+        img.style.cursor = 'default';
+    });
+    
+    document.querySelectorAll('.add-btn').forEach(btn => btn.remove());
+
 }
     function saveChanges() {
         console.log('Guardando cambios del perfil...');
