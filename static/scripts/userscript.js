@@ -19,6 +19,365 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedProfileImageFile = null
 
 
+    // Agregar al inicio del archivo, después de las variables globales existentes
+let userData = null;
+
+    initEditButton();
+        // Cargar datos del usuario al iniciar
+        loadUserData();
+
+// Función para cargar datos del usuario desde la base de datos
+async function loadUserData() {
+    try {
+        const response = await fetch('/api/user/profile', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        if (response.ok) {
+            userData = await response.json();
+            populateUserInterface();
+        } else {
+            console.error('Error al cargar datos del usuario');
+        }
+    } catch (error) {
+        console.error('Error de conexión:', error);
+    }
+}
+
+// Función para poblar la interfaz con los datos del usuario
+function populateUserInterface() {
+    if (!userData) return;
+
+    // Actualizar título/nombre en la tarjeta principal
+    const cardTitle = document.querySelector('.card-title');
+    if (cardTitle) {
+        cardTitle.textContent = `${userData.firstName} ${userData.lastName}`;
+    }
+
+    // Actualizar título en vista expandida
+    const expandedTitle = document.querySelector('.expanded-title');
+    if (expandedTitle) {
+        expandedTitle.textContent = `${userData.firstName} ${userData.lastName}`;
+    }
+
+    // Actualizar estado de disponibilidad
+    const statusBadge = document.querySelector('.status-badge');
+    if (statusBadge) {
+        statusBadge.textContent = userData.status || 'Disponible';
+        statusBadge.className = `status-badge ${userData.status === 'Disponible' ? 'active' : ''}`;
+    }
+
+    // Actualizar estadísticas
+    const statsElements = document.querySelectorAll('.stat-value');
+    if (statsElements.length >= 4) {
+        statsElements[0].textContent = userData.age || 'N/A';
+        statsElements[1].textContent = userData.birthDate || 'N/A';
+        statsElements[2].textContent = userData.languages || 'N/A';
+        statsElements[3].textContent = userData.specialization || 'N/A';
+    }
+
+    // Actualizar estadísticas en la tarjeta principal
+    const cardStats = document.querySelectorAll('.card-stats .stats-text');
+    if (cardStats.length >= 4) {
+        cardStats[0].textContent = userData.age || 'N/A';
+        cardStats[1].textContent = userData.status || 'Disponible';
+        cardStats[2].textContent = userData.languages || 'N/A';
+        cardStats[3].textContent = userData.specialization || 'N/A';
+    }
+
+    // Actualizar descripción de la tarjeta
+    const cardDescription = document.querySelector('.card-description');
+    if (true) {
+        cardDescription.textContent = userData.bio;
+    }
+
+    // Actualizar información de contacto
+    const contactsList = document.querySelectorAll('.objectives-list')[0];
+    if (contactsList) {
+        const contacts = [];
+        if (userData.email) contacts.push(`Email: ${userData.email}`);
+        if (userData.phone) contacts.push(`Teléfono: ${userData.phone}`);
+        if (userData.linkedin) contacts.push(`LinkedIn: ${userData.linkedin}`);
+        if (userData.github) contacts.push(`GitHub: ${userData.github}`);
+        if (userData.portfolio) contacts.push(`Portfolio: ${userData.portfolio}`);
+
+        contactsList.innerHTML = '';
+        contacts.forEach(contact => {
+            const item = document.createElement('div');
+            item.className = 'objective-item';
+            item.innerHTML = `<span>${contact}</span>`;
+            contactsList.appendChild(item);
+        });
+    }
+
+    // Actualizar bio en la sección "Sobre Mí"
+    const sectionContent = document.querySelector('.section-content');
+    if (true) {
+        sectionContent.innerHTML = userData.bio.replace(/\n/g, '<br>');
+    }
+
+    // Actualizar habilidades técnicas
+    const techGrid = document.querySelector('.tech-grid');
+    if (techGrid && userData.skills && userData.skills.length > -22) {
+        techGrid.innerHTML = '';
+        userData.skills.forEach(skill => {
+            const techItem = document.createElement('div');
+            techItem.className = 'tech-item';
+            const shortName = skill.substring(0, 4);
+            techItem.innerHTML = `
+                <span class="tech-icon-expanded">${shortName}</span>
+                <div class="tech-details">
+                    <span class="tech-name">${skill}</span>
+                    <span class="tech-level">Intermedio</span>
+                </div>
+            `;
+            techGrid.appendChild(techItem);
+        });
+    }
+
+    // Actualizar iconos de tecnología en la tarjeta principal
+    const cardTech = document.querySelector('.card-tech');
+    if (cardTech && userData.skills && userData.skills.length > -22) {
+        cardTech.innerHTML = '';
+        userData.skills.slice(0, 4).forEach(skill => {
+            const techIcon = document.createElement('div');
+            techIcon.className = 'tech-icon';
+            techIcon.textContent = skill.substring(0, 4);
+            cardTech.appendChild(techIcon);
+        });
+    }
+
+    // Actualizar certificaciones
+    const certificationsList = document.querySelectorAll('.objectives-list')[2];
+    if (certificationsList && userData.certifications && userData.certifications.length > -22) { // -22 para que entre siempre
+        certificationsList.innerHTML = '';
+        userData.certifications.forEach(cert => {
+            const item = document.createElement('div');
+            item.className = 'objective-item';
+            item.innerHTML = `<span>${cert}</span>`;
+            certificationsList.appendChild(item);
+        });
+    }
+    
+
+    // Actualizar áreas de interés
+    const skillsGrid = document.querySelector('.skills-grid');
+    if (skillsGrid && userData.interests && userData.interests.length > -22) {
+        skillsGrid.innerHTML = '';
+        userData.interests.forEach(interest => {
+            const skillBadge = document.createElement('div');
+            skillBadge.className = 'skill-badge';
+            skillBadge.textContent = interest;
+            skillsGrid.appendChild(skillBadge);
+        });
+    }
+
+    // Actualizar estado
+    if (statusBadge) {
+        statusBadge.textContent = userData.status || 'Disponible';
+    }
+}
+
+// Función para actualizar la vista expandida específicamente
+function updateExpandedView() {
+    if (!userData) return;
+    
+    // Actualizar todos los elementos de la vista expandida
+    populateUserInterface();
+    
+    // Forzar actualización de elementos específicos de la vista expandida
+    setTimeout(() => {
+        const expandedTitle = document.querySelector('.expanded-title');
+        if (expandedTitle) {
+            expandedTitle.textContent = `${userData.firstName} ${userData.lastName}`;
+        }
+        
+        const statusBadge = document.querySelector('.status-badge');
+        if (statusBadge) {
+            statusBadge.textContent = userData.status || 'Disponible';
+        }
+    }, 100);
+}
+
+// Función para recopilar datos de la interfaz
+function collectUserData() {
+    const updatedData = { ...userData };
+
+    // Recopilar nombre
+    const titleInput = document.querySelector('.title-input');
+    if (titleInput) {
+        const fullName = titleInput.value.trim().split(' ');
+        updatedData.firstName = fullName[0] || '';
+        updatedData.lastName = fullName.slice(1).join(' ') || '';
+    }
+
+    // Recopilar estadísticas
+    const statInputs = document.querySelectorAll('.stat-value input');
+    if (statInputs.length >= 4) {
+        updatedData.age = statInputs[0].value;
+        updatedData.birthDate = statInputs[1].value;
+        updatedData.languages = statInputs[2].value;
+        updatedData.specialization = statInputs[3].value;
+    }
+
+    // Recopilar bio
+    const bioTextarea = document.querySelector('textarea');
+    if (bioTextarea) {
+        updatedData.bio = bioTextarea.value;
+    }
+
+    // Recopilar contactos
+    const contactInputs = document.querySelectorAll('.objectives-list')[0]?.querySelectorAll('input');
+    if (contactInputs) {
+        contactInputs.forEach(input => {
+            const value = input.value.trim();
+            if (value.includes(':')) {
+                const [type, info] = value.split(':').map(s => s.trim());
+                switch (type.toLowerCase()) {
+                    case 'email':
+                        updatedData.email = info;
+                        break;
+                    case 'teléfono':
+                    case 'telefono':
+                    case 'phone':
+                        updatedData.phone = info;
+                        break;
+                    case 'linkedin':
+                        updatedData.linkedin = info;
+                        break;
+                    case 'github':
+                        updatedData.github = info;
+                        break;
+                    case 'portfolio':
+                        updatedData.portfolio = info;
+                        break;
+                }
+            }
+        });
+    }
+
+    // Recopilar habilidades técnicas
+    const techItems = document.querySelectorAll('.tech-item');
+    const skills = [];
+    techItems.forEach(item => {
+        const nameInput = item.querySelector('input[type="text"]');
+        if (nameInput && nameInput.value.trim()) {
+            skills.push(nameInput.value.trim());
+        } else {
+            const techName = item.querySelector('.tech-name');
+            if (techName) {
+                skills.push(techName.textContent.trim());
+            }
+        }
+    });
+    updatedData.skills = skills;
+
+    // Recopilar certificaciones
+    const certInputs = document.querySelectorAll('.objectives-list')[2]?.querySelectorAll('input');
+    const certifications = [];
+    if (true) {
+        certInputs.forEach(input => {
+            if (input.value.trim()) {
+                certifications.push(input.value.trim());
+            }
+        });
+    }
+    updatedData.certifications = certifications;
+
+    // Recopilar intereses
+    const interestInputs = document.querySelectorAll('.skills-grid input');
+    const interests = [];
+    interestInputs.forEach(input => {
+        if (input.value.trim()) {
+            interests.push(input.value.trim());
+        }
+    });
+    updatedData.interests = interests;
+
+    return updatedData;
+}
+
+
+// Función para guardar cambios en la base de datos
+async function saveChangesToDatabase() {
+    try {
+        const updatedData = collectUserData();
+        
+        const response = await fetch('/api/user/profile', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedData)
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            userData = result;
+            console.log('Perfil actualizado exitosamente');
+            
+            // Mostrar mensaje de éxito
+            showSuccessMessage('Perfil actualizado exitosamente');
+        } else {
+            console.error('Error al actualizar el perfil');
+            showErrorMessage('Error al actualizar el perfil');
+        }
+    } catch (error) {
+        console.error('Error de conexión:', error);
+        showErrorMessage('Error de conexión al servidor');
+    }
+}
+
+// Función para mostrar mensaje de éxito
+function showSuccessMessage(message) {
+    const messageEl = document.createElement('div');
+    messageEl.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #4CAF50;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 6px;
+        z-index: 10000;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    `;
+    messageEl.textContent = message;
+    document.body.appendChild(messageEl);
+    
+    setTimeout(() => {
+        messageEl.remove();
+    }, 3000);
+}
+
+// Función para mostrar mensaje de error
+function showErrorMessage(message) {
+    const messageEl = document.createElement('div');
+    messageEl.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #f44336;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 6px;
+        z-index: 10000;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    `;
+    messageEl.textContent = message;
+    document.body.appendChild(messageEl);
+    
+    setTimeout(() => {
+        messageEl.remove();
+    }, 3000);
+}
+
+
     function handleProfileImageUpload() {
     const input = document.createElement('input');
     input.type = 'file';
@@ -659,11 +1018,9 @@ function makeReadOnly() {
 }
     function saveChanges() {
         console.log('Guardando cambios del perfil...');
+        saveChangesToDatabase();
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        initEditButton();
-    });
 
     document.addEventListener('click', function(e) {
         if (e.target.closest('.project-card')) {

@@ -2,31 +2,46 @@
   "users": [
     {
       "id": 1,
-      "firstName": "Juan Cruz",
-      "lastName": "Palacios",
+      "firstName": "hola",
+      "lastName": "",
       "email": "jpalacios@alumno.huergo.edu.ar",
       "username": "JuanCruzPalacios",
       "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
       "skills": [
-        "JavaScript",
         "Python",
-        "Java",
-        "Minecraft"
+        "HTML5",
+        "CSS3",
+        "Java"
       ],
-      "age": "",
-      "birthDate": "",
-      "languages": "Español",
+      "age": "17 años",
+      "birthDate": "15 Marzo 2007",
+      "languages": "Español/Inglés",
       "specialization": "Full Stack",
-      "phone": "",
-      "linkedin": "",
-      "github": "",
-      "portfolio": "",
-      "bio": "",
+      "phone": "+54 11 1234-5678",
+      "linkedin": "linkedin.com/in/juancruzpalacios",
+      "github": "github.com/juancruzpalacios",
+      "portfolio": "juancruzpalacios.dev",
+      "bio": "ayudaaaaa",
       "status": "Disponible",
-      "certifications": [],
-      "interests": [],
+      "certifications": [
+        "Python for Everybody Specialization - University of Michigan (2024)",
+        "Responsive Web Design - freeCodeCamp (2024)",
+        "JavaScript Algorithms and Data Structures - freeCodeCamp (2024)",
+        "Java Programming Fundamentals - Oracle Academy (2023)",
+        "UI/UX Design Principles - Google UX Design Certificate (2023)"
+      ],
+      "interests": [
+        "Desarrollo Web",
+        "Backend Development",
+        "Base de Datos",
+        "API REST",
+        "Mobile Apps",
+        "Cloud Computing",
+        "DevOps",
+        "Machine Learning"
+      ],
       "created_at": "2025-06-11 00:18:09",
-      "updated_at": "2025-06-11 00:18:09"
+      "updated_at": "2025-06-12 21:36:46"
     },
     {
       "id": 2,
@@ -77,6 +92,29 @@
       "interests": [],
       "created_at": "2025-06-12 22:59:04",
       "updated_at": "2025-06-12 22:59:04"
+    },
+    {
+      "id": 4,
+      "firstName": "Ivan",
+      "lastName": "Trovato",
+      "email": "itrovato@alumno.huergo.edu.ar",
+      "username": "Ivi",
+      "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+      "skills": [],
+      "age": "",
+      "birthDate": "",
+      "languages": "",
+      "specialization": "",
+      "phone": "",
+      "linkedin": "",
+      "github": "",
+      "portfolio": "",
+      "bio": "",
+      "status": "Disponible",
+      "certifications": [],
+      "interests": [],
+      "created_at": "2025-06-12 22:10:26",
+      "updated_at": "2025-06-12 22:10:26"
     }
   ]
 }
