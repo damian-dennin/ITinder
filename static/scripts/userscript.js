@@ -78,12 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('mousedown', handleStart);
     document.addEventListener('mousemove', handleMove);
     document.addEventListener('mouseup', handleEnd);
-
-
-    document.querySelectorAll('.user-card-image').forEach(img => {
-    img.addEventListener('click', handleFeedProfileImageUpload);
-    img.style.cursor = 'pointer';
-    });
+;
 
     // Sidebar trigger hover handler
     sidebarTrigger.addEventListener('mouseenter', () => {
@@ -226,8 +221,7 @@ function makeEditable() {
         }, 50);
     }
     
-    const profileImages = document.querySelectorAll('.user-card-image');
-    profileImages.forEach(profileImg => {
+    document.querySelectorAll('.user-card-image').forEach(profileImg => {
     if (!profileImg.querySelector('.upload-overlay')) {
         const uploadOverlay = document.createElement('div');
         uploadOverlay.className = 'upload-overlay';
@@ -268,6 +262,7 @@ function makeEditable() {
         `;
         
         profileImg.style.position = 'relative';
+        profileImg.style.cursor = 'pointer'; // Agregar esta línea
         profileImg.appendChild(uploadOverlay);
         
         profileImg.addEventListener('mouseenter', () => {
@@ -280,7 +275,7 @@ function makeEditable() {
         
         uploadOverlay.addEventListener('click', handleProfileImageUpload);
     }
-    });
+});
 
 
     document.querySelectorAll('.stat-value').forEach(stat => {
@@ -342,6 +337,7 @@ function makeEditable() {
 document.querySelectorAll('.tech-item').forEach(techItem => {
     const techName = techItem.querySelector('.tech-name');
     const techLevel = techItem.querySelector('.tech-level');
+    const techIcon = techItem.querySelector('.tech-icon-expanded'); // Agregar referencia al ícono
     
     if (techName) {
         const nameInput = document.createElement('input');
@@ -364,6 +360,12 @@ document.querySelectorAll('.tech-item').forEach(techItem => {
             const maxWidth = 150;
             const calculatedWidth = Math.max(this.value.length * 8 + 20, minWidth);
             this.style.width = Math.min(calculatedWidth, maxWidth) + 'px';
+            
+            // Actualizar el ícono cuando cambie el texto
+            if (techIcon) {
+                const newIconText = this.value.substring(0, 4) || '?';
+                techIcon.textContent = newIconText;
+            }
         });
         
         techName.replaceWith(nameInput);
@@ -538,11 +540,17 @@ function addNewTech() {
     `;
     
     const newInput = newTech.querySelector('input[type="text"]');
+    const techIcon = newTech.querySelector('.tech-icon-expanded');
+    
     newInput.addEventListener('input', function() {
         const minWidth = 60;
         const maxWidth = 150;
         const calculatedWidth = Math.max(this.value.length * 8 + 20, minWidth);
         this.style.width = Math.min(calculatedWidth, maxWidth) + 'px';
+        
+        // Actualizar el ícono cuando cambie el texto
+        const newIconText = this.value.substring(0, 4) || '?';
+        techIcon.textContent = newIconText;
     });
     
     techGrid.insertBefore(newTech, techGrid.querySelector('.add-btn'));
@@ -641,6 +649,13 @@ function makeReadOnly() {
     });
     
     document.querySelectorAll('.add-btn').forEach(btn => btn.remove());
+    document.querySelectorAll('.upload-overlay').forEach(overlay => overlay.remove());
+    document.querySelectorAll('.user-card-image').forEach(img => {
+        img.style.cursor = 'default';
+    });
+    
+    document.querySelectorAll('.add-btn').forEach(btn => btn.remove());
+
 }
     function saveChanges() {
         console.log('Guardando cambios del perfil...');

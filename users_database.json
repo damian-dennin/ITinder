@@ -52,6 +52,31 @@
       "interests": [],
       "created_at": "2025-06-11 23:13:19",
       "updated_at": "2025-06-11 23:13:19"
+    },
+    {
+      "id": 3,
+      "firstName": "ea",
+      "lastName": "bl",
+      "email": "eabelle@alumno.huergo.edu.ar",
+      "username": "ezequiel",
+      "password": "178169e6a77aabad56ae4f141375f84cf1d3e07621ec16c114bd695337404c59",
+      "skills": [
+        "MAICENA Y JAVASCRIPT"
+      ],
+      "age": "",
+      "birthDate": "",
+      "languages": "Español",
+      "specialization": "Full Stack",
+      "phone": "",
+      "linkedin": "",
+      "github": "",
+      "portfolio": "",
+      "bio": "",
+      "status": "Disponible",
+      "certifications": [],
+      "interests": [],
+      "created_at": "2025-06-12 22:59:04",
+      "updated_at": "2025-06-12 22:59:04"
     }
   ]
 }
