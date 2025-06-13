@@ -6,7 +6,7 @@
       "lastName": "Palacios",
       "email": "jpalacios@alumno.huergo.edu.ar",
       "username": "JuanCruzPalacios",
-      "password": "5c8c3982cf6788e18a5f479def04225a82e1df0da88bb6c85fd7e83a090e1b9b",
+      "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
       "skills": [
         "JavaScript",
         "Python",
@@ -25,8 +25,58 @@
       "status": "Disponible",
       "certifications": [],
       "interests": [],
-      "created_at": "2025-06-12 00:00:00",
-      "updated_at": "2025-06-12 00:00:00"
+      "created_at": "2025-06-11 00:18:09",
+      "updated_at": "2025-06-11 00:18:09"
+    },
+    {
+      "id": 2,
+      "firstName": "Eze",
+      "lastName": "Abe",
+      "email": "exerojo2007@gmail.com",
+      "username": "zefky",
+      "password": "a0bca69f4d8003db9ebc1cec5c355a77a4c12e6e7382554c372c06765edef83a",
+      "skills": [
+        "piton"
+      ],
+      "age": "",
+      "birthDate": "",
+      "languages": "Español",
+      "specialization": "Full Stack",
+      "phone": "",
+      "linkedin": "",
+      "github": "",
+      "portfolio": "",
+      "bio": "",
+      "status": "Disponible",
+      "certifications": [],
+      "interests": [],
+      "created_at": "2025-06-11 23:13:19",
+      "updated_at": "2025-06-11 23:13:19"
+    },
+    {
+      "id": 3,
+      "firstName": "ea",
+      "lastName": "bl",
+      "email": "eabelle@alumno.huergo.edu.ar",
+      "username": "ezequiel",
+      "password": "178169e6a77aabad56ae4f141375f84cf1d3e07621ec16c114bd695337404c59",
+      "skills": [
+        "MAICENA Y JAVASCRIPT"
+      ],
+      "age": "",
+      "birthDate": "",
+      "languages": "Español",
+      "specialization": "Full Stack",
+      "phone": "",
+      "linkedin": "",
+      "github": "",
+      "portfolio": "",
+      "bio": "",
+      "status": "Disponible",
+      "certifications": [],
+      "interests": [],
+      "created_at": "2025-06-12 22:59:04",
+      "updated_at": "2025-06-12 22:59:04"
     }
   ]
 }

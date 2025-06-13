@@ -26,7 +26,6 @@
     </div>
     <div class="sidebar-trigger" id="sidebar-trigger"></div>
 
-    <!-- Menú móvil agregado -->
     <div class="mobile-header" id="mobile-header">
         <img src="/static/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img-mini">        
         <div class="menu-icons">
@@ -41,7 +40,7 @@
             <span class="slider"></span>
         </label>
     </div>
-    <!-- Fin del menú móvil -->
+
 
     <div class="card-container">
         <div class="project-card" id="project-card">
@@ -76,6 +75,13 @@
         <div class="dislike-indicator">Pass away</div>
         <div class="ampliar-indicator"> ↑ Show more ↑</div>
         <div class="like-indicator">Join me</div>
+    </div>
+
+    <div class="create-project-container">
+    <button class="create-project-btn" id="create-project-btn">
+        <span class="create-icon">+</span>
+        Crear proyecto
+    </button>
     </div>
 
     <div class="expanded-card hidden" id="expanded-card">
@@ -213,6 +219,98 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="create-project-card hidden" id="create-project-card">
+    <div class="create-content">
+        <div class="create-header">
+            <h2 class="create-title">Crear Nuevo Proyecto</h2>
+        </div>
+
+        <form class="create-form" id="create-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="project-name">Nombre del Proyecto *</label>
+                    <input type="text" id="project-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="project-status">Estado</label>
+                    <select id="project-status">
+                        <option value="activo">Activo</option>
+                        <option value="planificacion">En Planificación</option>
+                        <option value="desarrollo">En Desarrollo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="team-size">Tamaño del Equipo</label>
+                    <input type="text" id="team-size" placeholder="ej: 5/10">
+                </div>
+                <div class="form-group">
+                    <label for="duration">Duración</label>
+                    <input type="text" id="duration" placeholder="ej: 3 meses">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="language">Idioma</label>
+                    <select id="language">
+                        <option value="español">Español</option>
+                        <option value="ingles">Inglés</option>
+                        <option value="portugues">Portugués</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="project-type">Tipo de Proyecto</label>
+                    <select id="project-type">
+                        <option value="full-stack">Full Stack</option>
+                        <option value="frontend">Frontend</option>
+                        <option value="backend">Backend</option>
+                        <option value="mobile">Mobile</option>
+                        <option value="data-science">Data Science</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Descripción del Proyecto *</label>
+                <textarea id="description" rows="4" required placeholder="Describe tu proyecto en detalle..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="project-image">Imagen del Proyecto</label>
+                <div class="image-upload-container">
+                    <input type="file" id="project-image" accept="image/*" class="image-input">
+                    <div class="image-preview" id="image-preview">
+                        <div class="image-placeholder">
+                            <span class="upload-icon">📁</span>
+                            <span class="upload-text">Seleccionar imagen</span>
+                        </div>
+                        <img id="preview-img" class="preview-image" style="display: none;">
+                        <button type="button" class="remove-image" id="remove-image" style="display: none;">×</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="technologies">Tecnologías (separadas por comas)</label>
+                <input type="text" id="technologies" placeholder="Python, React, Node.js, MongoDB">
+            </div>
+
+            <div class="form-group">
+                <label for="skills">Aptitudes Buscadas (separadas por comas)</label>
+                <input type="text" id="skills" placeholder="Desarrollo Backend, UI/UX, Testing">
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="action-btn secondary" id="cancel-create">Cancelar</button>
+                <button type="submit" class="action-btn primary">Crear Proyecto</button>
+            </div>
+        </form>
+    </div>
     </div>
 
     <script src="/static/scripts/script.js"></script>
