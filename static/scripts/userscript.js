@@ -379,6 +379,11 @@ function showErrorMessage(message) {
 
 
     function handleProfileImageUpload() {
+    // Solo permitir cambio de foto si está en modo edición
+    if (!isEditMode) {
+        return;
+    }
+    
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -406,7 +411,7 @@ function showErrorMessage(message) {
     document.body.appendChild(input);
     input.click();
     document.body.removeChild(input);
-    }
+}
     
     // Controladores de tema oscuro corregidos
     const toggle = document.getElementById('theme-toggle');
@@ -437,7 +442,8 @@ function showErrorMessage(message) {
     card.addEventListener('mousedown', handleStart);
     document.addEventListener('mousemove', handleMove);
     document.addEventListener('mouseup', handleEnd);
-;
+
+
 
     // Sidebar trigger hover handler
     sidebarTrigger.addEventListener('mouseenter', () => {
@@ -503,6 +509,11 @@ function showErrorMessage(message) {
 
 
     function handleFeedProfileImageUpload() {
+    // Solo permitir cambio de foto si está en modo edición
+    if (!isEditMode) {
+        return;
+    }
+    
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -580,7 +591,10 @@ function makeEditable() {
         }, 50);
     }
     
-    document.querySelectorAll('.user-card-image').forEach(profileImg => {
+    // 1. Modificar la función makeEditable() - cambiar esta parte:
+
+const profileImages = document.querySelectorAll('.user-card-image');
+profileImages.forEach(profileImg => {
     if (!profileImg.querySelector('.upload-overlay')) {
         const uploadOverlay = document.createElement('div');
         uploadOverlay.className = 'upload-overlay';
@@ -621,11 +635,13 @@ function makeEditable() {
         `;
         
         profileImg.style.position = 'relative';
-        profileImg.style.cursor = 'pointer'; // Agregar esta línea
         profileImg.appendChild(uploadOverlay);
         
+        // Solo mostrar overlay en hover si está en modo edición
         profileImg.addEventListener('mouseenter', () => {
-            uploadOverlay.style.opacity = '1';
+            if (isEditMode) {
+                uploadOverlay.style.opacity = '1';
+            }
         });
         
         profileImg.addEventListener('mouseleave', () => {
@@ -696,7 +712,6 @@ function makeEditable() {
 document.querySelectorAll('.tech-item').forEach(techItem => {
     const techName = techItem.querySelector('.tech-name');
     const techLevel = techItem.querySelector('.tech-level');
-    const techIcon = techItem.querySelector('.tech-icon-expanded'); // Agregar referencia al ícono
     
     if (techName) {
         const nameInput = document.createElement('input');
@@ -719,12 +734,6 @@ document.querySelectorAll('.tech-item').forEach(techItem => {
             const maxWidth = 150;
             const calculatedWidth = Math.max(this.value.length * 8 + 20, minWidth);
             this.style.width = Math.min(calculatedWidth, maxWidth) + 'px';
-            
-            // Actualizar el ícono cuando cambie el texto
-            if (techIcon) {
-                const newIconText = this.value.substring(0, 4) || '?';
-                techIcon.textContent = newIconText;
-            }
         });
         
         techName.replaceWith(nameInput);
@@ -784,7 +793,11 @@ document.querySelectorAll('.tech-item').forEach(techItem => {
     
     addAddButtons();
 }
-
+function removeUploadOverlays() {
+    document.querySelectorAll('.upload-overlay').forEach(overlay => {
+        overlay.remove();
+    });
+}
 function addAddButtons() {
     const contactsSection = document.querySelectorAll('.objectives-list')[0];
     if (contactsSection && !contactsSection.querySelector('.add-btn')) {
@@ -899,17 +912,11 @@ function addNewTech() {
     `;
     
     const newInput = newTech.querySelector('input[type="text"]');
-    const techIcon = newTech.querySelector('.tech-icon-expanded');
-    
     newInput.addEventListener('input', function() {
         const minWidth = 60;
         const maxWidth = 150;
         const calculatedWidth = Math.max(this.value.length * 8 + 20, minWidth);
         this.style.width = Math.min(calculatedWidth, maxWidth) + 'px';
-        
-        // Actualizar el ícono cuando cambie el texto
-        const newIconText = this.value.substring(0, 4) || '?';
-        techIcon.textContent = newIconText;
     });
     
     techGrid.insertBefore(newTech, techGrid.querySelector('.add-btn'));
@@ -1008,13 +1015,8 @@ function makeReadOnly() {
     });
     
     document.querySelectorAll('.add-btn').forEach(btn => btn.remove());
-    document.querySelectorAll('.upload-overlay').forEach(overlay => overlay.remove());
-    document.querySelectorAll('.user-card-image').forEach(img => {
-        img.style.cursor = 'default';
-    });
-    
-    document.querySelectorAll('.add-btn').forEach(btn => btn.remove());
 
+    removeUploadOverlays();
 }
     function saveChanges() {
         console.log('Guardando cambios del perfil...');
