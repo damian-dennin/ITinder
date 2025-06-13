@@ -20,6 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     function handleProfileImageUpload() {
+    // Solo permitir cambio de foto si está en modo edición
+    if (!isEditMode) {
+        return;
+    }
+    
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -47,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(input);
     input.click();
     document.body.removeChild(input);
-    }
+}
     
     // Controladores de tema oscuro corregidos
     const toggle = document.getElementById('theme-toggle');
@@ -80,10 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mouseup', handleEnd);
 
 
-    document.querySelectorAll('.user-card-image').forEach(img => {
-    img.addEventListener('click', handleFeedProfileImageUpload);
-    img.style.cursor = 'pointer';
-    });
 
     // Sidebar trigger hover handler
     sidebarTrigger.addEventListener('mouseenter', () => {
@@ -149,6 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     function handleFeedProfileImageUpload() {
+    // Solo permitir cambio de foto si está en modo edición
+    if (!isEditMode) {
+        return;
+    }
+    
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -226,8 +232,10 @@ function makeEditable() {
         }, 50);
     }
     
-    const profileImages = document.querySelectorAll('.user-card-image');
-    profileImages.forEach(profileImg => {
+    // 1. Modificar la función makeEditable() - cambiar esta parte:
+
+const profileImages = document.querySelectorAll('.user-card-image');
+profileImages.forEach(profileImg => {
     if (!profileImg.querySelector('.upload-overlay')) {
         const uploadOverlay = document.createElement('div');
         uploadOverlay.className = 'upload-overlay';
@@ -270,8 +278,11 @@ function makeEditable() {
         profileImg.style.position = 'relative';
         profileImg.appendChild(uploadOverlay);
         
+        // Solo mostrar overlay en hover si está en modo edición
         profileImg.addEventListener('mouseenter', () => {
-            uploadOverlay.style.opacity = '1';
+            if (isEditMode) {
+                uploadOverlay.style.opacity = '1';
+            }
         });
         
         profileImg.addEventListener('mouseleave', () => {
@@ -280,7 +291,7 @@ function makeEditable() {
         
         uploadOverlay.addEventListener('click', handleProfileImageUpload);
     }
-    });
+});
 
 
     document.querySelectorAll('.stat-value').forEach(stat => {
@@ -423,7 +434,11 @@ document.querySelectorAll('.tech-item').forEach(techItem => {
     
     addAddButtons();
 }
-
+function removeUploadOverlays() {
+    document.querySelectorAll('.upload-overlay').forEach(overlay => {
+        overlay.remove();
+    });
+}
 function addAddButtons() {
     const contactsSection = document.querySelectorAll('.objectives-list')[0];
     if (contactsSection && !contactsSection.querySelector('.add-btn')) {
@@ -641,6 +656,8 @@ function makeReadOnly() {
     });
     
     document.querySelectorAll('.add-btn').forEach(btn => btn.remove());
+
+    removeUploadOverlays();
 }
     function saveChanges() {
         console.log('Guardando cambios del perfil...');
