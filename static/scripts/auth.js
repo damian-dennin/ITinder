@@ -405,3 +405,23 @@ document.addEventListener('DOMContentLoaded', () => {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = AuthManager;
 }
+<<<<<<< HEAD
+=======
+
+const revealElements = document.querySelectorAll('.feature-card, .testimonial-card');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+      entry.target.style.transition = 'all 0.6s ease';
+    }
+  });
+}, { threshold: 0.1 });
+
+revealElements.forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(30px)';
+  observer.observe(el);
+});
+>>>>>>> 1cf77825cf5b286f786019df67d531ea529e2590
