@@ -1448,6 +1448,8 @@ body.dark-mode .viewing-progress {
     border-color: rgba(255, 255, 255, 0.2);
 }
 
+
+
 /* Responsive design */
 @media (max-width: 768px) {
     .all-projects-viewed-message,
