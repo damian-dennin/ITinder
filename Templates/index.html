@@ -8,18 +8,6 @@
 </head>
 <body>
     <!-- Header con logo y toggle -->
-    <header>
-  <nav>
-    <a href="#">Opción 1</a>
-    <a href="#">Opción 2</a>
-    <a href="#">Opción 3</a>
-    <a href="#">Opción 4</a>
-  </nav>
-  <div class="auth-links">
-    <a href="{{ url_for('login_view') }}?mode=register">Registrarse</a>
-    <a href="{{ url_for('login_view') }}">Iniciar Sesión</a>
-  </div>
-</header>
     <div class="auth-header">
         <div class="logo-container">
             <img src="/static/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img">
@@ -103,7 +91,135 @@
         </div>
 
         <!-- Sección de formularios -->
-        
+        <div class="forms-section">
+            <!-- Formulario de Login -->
+            <div class="auth-form-container active" id="login-form">
+                <div class="form-header">
+                    <h2 class="form-title">Iniciar Sesión</h2>
+                    <p class="form-subtitle">Bienvenido de vuelta</p>
+                </div>
+
+                <form class="auth-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail" class="form-label">Email</label>
+                        <input type="email" id="loginEmail" name="email" class="form-input" required>
+                        <div class="form-error" id="loginEmailError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword" class="form-label">Contraseña</label>
+                        <div class="password-input-container">
+                            <input type="password" id="loginPassword" name="password" class="form-input" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+                                <span class="password-toggle-icon">👁️</span>
+                            </button>
+                        </div>
+                        <div class="form-error" id="loginPasswordError"></div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="rememberMe">
+                            <span class="checkmark"></span>
+                            Recordarme
+                        </label>
+                        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Iniciar Sesión</button>
+                </form>
+
+                <div class="form-footer">
+                    <p>¿No tienes cuenta? <button class="link-btn" onclick="showRegister()">Regístrate aquí</button></p>
+                </div>
+            </div>
+
+            <!-- Formulario de Registro -->
+            <div class="auth-form-container" id="register-form">
+                <div class="form-header">
+                    <h2 class="form-title">Crear Cuenta</h2>
+                    <p class="form-subtitle">Únete a la comunidad</p>
+                </div>
+
+                <form class="auth-form" id="registerForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName" class="form-label">Nombre</label>
+                            <input type="text" id="firstName" name="firstName" class="form-input" required>
+                            <div class="form-error" id="firstNameError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName" class="form-label">Apellido</label>
+                            <input type="text" id="lastName" name="lastName" class="form-input" required>
+                            <div class="form-error" id="lastNameError"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerEmail" class="form-label">Email</label>
+                        <input type="email" id="registerEmail" name="email" class="form-input" required>
+                        <div class="form-error" id="registerEmailError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username" class="form-label">Nombre de usuario</label>
+                        <input type="text" id="username" name="username" class="form-input" required>
+                        <div class="form-error" id="usernameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerPassword" class="form-label">Contraseña</label>
+                        <div class="password-input-container">
+                            <input type="password" id="registerPassword" name="password" class="form-input" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('registerPassword')">
+                                <span class="password-toggle-icon">👁️</span>
+                            </button>
+                        </div>
+                        <div class="password-strength" id="passwordStrength"></div>
+                        <div class="form-error" id="registerPasswordError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">Confirmar contraseña</label>
+                        <div class="password-input-container">
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                                <span class="password-toggle-icon">👁️</span>
+                            </button>
+                        </div>
+                        <div class="form-error" id="confirmPasswordError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="skills" class="form-label">Habilidades principales (opcional)</label>
+                        <input type="text" id="skills" name="skills" class="form-input" placeholder="Ej: JavaScript, Python, React...">
+                        <small class="form-help">Separa las habilidades con comas</small>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="acceptTerms" required>
+                            <span class="checkmark"></span>
+                            Acepto los  <a href="#" class="terms-link"> términos y condiciones</a>
+                        </label>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="newsletter">
+                            <span class="checkmark"></span>
+                            Recibir notificaciones sobre nuevos proyectos
+                        </label>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Crear Cuenta</button>
+                </form>
+
+                <div class="form-footer">
+                    <p>¿Ya tienes cuenta? <button class="link-btn" onclick="showLogin()">Inicia sesión aquí</button></p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Loading overlay -->

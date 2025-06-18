@@ -75,10 +75,8 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 def verify_password(password, hashed_password):
-    hashed_input = hash_password(password)
-    print(f"[DEBUG] Verificando password:\n  Ingresada: {password}\n  Hash calculado: {hashed_input}\n  Hash esperado: {hashed_password}")
-    return hashed_input == hashed_password
-
+    """Verificar contraseña"""
+    return hash_password(password) == hashed_password
 
 # Rutas de autenticación
 @app.route('/')
@@ -265,12 +263,6 @@ def bio():
         return redirect(url_for('index'))
     return render_template('Bio.html')
 
-@app.route('/login')
-def login_view():
-    if 'user_id' not in session:
-        return render_template('login.html')
-    return redirect(url_for('feed'))
-
 # Rutas de proyectos (existentes)
 @app.route('/api/projects')
 def get_projects():
@@ -393,7 +385,4 @@ if __name__ == '__main__':
         initialize_users_database()
         print(f"Base de datos de usuarios inicializada en {USERS_FILE}")
     
-    try:
-        app.run(debug=True, host='0.0.0.0', port=5000)
-    except Exception as e:
-        print("Ocurrió un error al iniciar la app:", e)
+    app.run(debug=True, host='0.0.0.0', port=5000)
