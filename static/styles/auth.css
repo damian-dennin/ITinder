@@ -29,24 +29,6 @@ body.dark-mode {
     background: linear-gradient(135deg, var(--violetaFondoOscuro) 0%, #1a0030 50%, var(--violetaFondoOscuro) 100%);
 }
 
-
-
-    nav {
-      display: flex;
-      gap: 1rem;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-
 /* Header con logo y toggle */
 .auth-header {
     display: flex;
@@ -55,47 +37,6 @@ body.dark-mode {
     padding: 20px;
     position: relative;
     z-index: 1001;
-}
-
-header {
-  background-color: #613A67;
-  color: white;
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-body.dark-mode header{
-    background-color: #C27BFF;
-}
-
-.auth-links {
-  display: flex;
-  gap: 1rem;
-}
-
-.auth-links a {
-  background-color: #230042;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-}
-
-body.dark-mode .auth-links a{
-    background-color: #D4BDE8;
-    color:black;
-}
-
-.auth-links a:hover {
-  background-color: #D4BDE8;
-}
-
-body.dark-mode .auth-links a:hover {
-    background-color: #230042;
 }
 
 .logo-container {
@@ -335,14 +276,8 @@ body.dark-mode .testimonial-author {
 }
 
 /* Sección de formularios */
-
-.forms-container{
-    display:flex;
-    justify-content: center;
-}
-
 .forms-section {
-    flex: 0 0 600px;
+    flex: 0 0 450px;
     padding: 40px;
     padding-right: 60px;
     display: flex;
@@ -584,6 +519,23 @@ body.dark-mode .checkbox-container {
 
 .submit-btn:active {
     transform: translateY(0);
+}
+
+.submit-btn:active::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.3);
+    top: 0;
+    left: 0;
+    border-radius: 12px;
+    animation: ripple 0.4s ease-out;
+}
+
+@keyframes ripple {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(1.4); }
 }
 
 /* Form footer */
