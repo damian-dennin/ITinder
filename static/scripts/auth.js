@@ -179,8 +179,7 @@ class AuthManager {
             document.getElementById('registerPasswordError').textContent = 'La contraseña es requerida';
             isValid = false;
         } else if (password.length < 6) {
-            document.getElementById('registerPasswordError').textContent = 'La contraseña debe tener al menos 6 caracteres';
-            this.showNotification('La contraseña debe tener al menos 6 caracteres.', 'error');
+            document.getElementById('registerPasswordError').textContent = 'Debe tener al menos 6 caracteres';
             isValid = false;
         }
 
@@ -190,7 +189,6 @@ class AuthManager {
             isValid = false;
         } else if (password !== confirmPassword) {
             document.getElementById('confirmPasswordError').textContent = 'Las contraseñas no coinciden';
-            this.showNotification('Las contraseñas ingresadas no coinciden.', 'error');
             isValid = false;
         }
 
