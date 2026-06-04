@@ -17,10 +17,10 @@
 
     <div class="sidebar" id="sidebar">
         <div class="menu-icons">
-            <div class="menu-icon hamburger"></div>
+            <a href="{{ url_for('candidates') }}" class="menu-icon hamburger"></a>
             <div class="menu-icon gear"></div>
             <div class="menu-icon user"></div>
-            <div class="menu-icon download"></div>
+            <a href="{{ url_for('chat') }}" class="menu-icon download"></a>
         </div>
         <label class="toggle-switch">
             <input type="checkbox" id="theme-toggle">
@@ -36,7 +36,7 @@
         <a href="{{ url_for('feed') }}" class="menu-icon house"></a>
         <div class="menu-icon gear"></div>
         <div class="menu-icon user"></div>
-        <div class="menu-icon download"></div>
+        <a href="{{ url_for('chat') }}" class="menu-icon download"></a>
     </div>
     <label class="toggle-switch">
         <input type="checkbox" id="theme-togglemo">
@@ -239,6 +239,27 @@
                             <div class="skill-badge">Cloud Computing</div>
                             <div class="skill-badge">DevOps</div>
                             <div class="skill-badge">Machine Learning</div>
+                        </div>
+                    </div>
+
+                    <div class="section" id="my-projects-section">
+                        <h3 class="section-title">Mis Proyectos</h3>
+                        <div id="my-projects-list">
+                            <p style="opacity:0.5;font-size:0.9rem;">Cargando proyectos...</p>
+                        </div>
+                        <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+                            <a href="/candidates" style="
+                                padding:8px 16px; border-radius:8px;
+                                background:linear-gradient(135deg,#667eea,#764ba2);
+                                color:white; text-decoration:none; font-size:0.85rem;">
+                                👥 Ver candidatos
+                            </a>
+                            <a href="/chat" style="
+                                padding:8px 16px; border-radius:8px;
+                                background:linear-gradient(135deg,#4a2c50,#764ba2);
+                                color:white; text-decoration:none; font-size:0.85rem;">
+                                💬 Mis chats
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -25,6 +25,7 @@ let userData = null;
     initEditButton();
         // Cargar datos del usuario al iniciar
         loadUserData();
+        loadUserProjects();
 
 // Función para cargar datos del usuario desde la base de datos
 async function loadUserData() {
@@ -57,6 +58,19 @@ function populateUserInterface() {
         cardTitle.textContent = `${userData.firstName} ${userData.lastName}`;
     }
 
+    // Avatar con iniciales en todas las imágenes de perfil
+    const initials = ((userData.firstName?.[0] || '') + (userData.lastName?.[0] || '')).toUpperCase();
+    document.querySelectorAll('.user-card-image').forEach(av => {
+        if (!av.querySelector('.avatar-initials')) {
+            const span = document.createElement('span');
+            span.className = 'avatar-initials';
+            span.textContent = initials;
+            av.appendChild(span);
+        } else {
+            av.querySelector('.avatar-initials').textContent = initials;
+        }
+    });
+
     // Actualizar título en vista expandida
     const expandedTitle = document.querySelector('.expanded-title');
     if (expandedTitle) {
@@ -79,18 +93,18 @@ function populateUserInterface() {
         statsElements[3].textContent = userData.specialization || 'N/A';
     }
 
-    // Actualizar estadísticas en la tarjeta principal
+    // Actualizar estadísticas en la tarjeta principal (ocultar si está vacío)
+    const cardStatSpans = document.querySelectorAll('.card-stats > span');
     const cardStats = document.querySelectorAll('.card-stats .stats-text');
-    if (cardStats.length >= 4) {
-        cardStats[0].textContent = userData.age || 'N/A';
-        cardStats[1].textContent = userData.status || 'Disponible';
-        cardStats[2].textContent = userData.languages || 'N/A';
-        cardStats[3].textContent = userData.specialization || 'N/A';
-    }
+    const statValues = [userData.age, userData.status || 'Disponible', userData.languages, userData.specialization];
+    statValues.forEach((val, i) => {
+        if (cardStats[i]) cardStats[i].textContent = val || '';
+        if (cardStatSpans[i]) cardStatSpans[i].classList.toggle('stat-hidden', !val);
+    });
 
     // Actualizar descripción de la tarjeta
     const cardDescription = document.querySelector('.card-description');
-    if (true) {
+    if (cardDescription && userData.bio) {
         cardDescription.textContent = userData.bio;
     }
 
@@ -115,13 +129,13 @@ function populateUserInterface() {
 
     // Actualizar bio en la sección "Sobre Mí"
     const sectionContent = document.querySelector('.section-content');
-    if (true) {
+    if (sectionContent && userData.bio) {
         sectionContent.innerHTML = userData.bio.replace(/\n/g, '<br>');
     }
 
     // Actualizar habilidades técnicas
     const techGrid = document.querySelector('.tech-grid');
-    if (techGrid && userData.skills && userData.skills.length > -22) {
+    if (techGrid && userData.skills && userData.skills.length > 0) {
         techGrid.innerHTML = '';
         userData.skills.forEach(skill => {
             const techItem = document.createElement('div');
@@ -140,7 +154,7 @@ function populateUserInterface() {
 
     // Actualizar iconos de tecnología en la tarjeta principal
     const cardTech = document.querySelector('.card-tech');
-    if (cardTech && userData.skills && userData.skills.length > -22) {
+    if (cardTech && userData.skills && userData.skills.length > 0) {
         cardTech.innerHTML = '';
         userData.skills.slice(0, 4).forEach(skill => {
             const techIcon = document.createElement('div');
@@ -150,9 +164,21 @@ function populateUserInterface() {
         });
     }
 
+    // Actualizar objetivos profesionales
+    const objectivesListEl = document.querySelectorAll('.objectives-list')[1];
+    if (objectivesListEl && userData.objectives && userData.objectives.length > 0) {
+        objectivesListEl.innerHTML = '';
+        userData.objectives.forEach(obj => {
+            const item = document.createElement('div');
+            item.className = 'objective-item';
+            item.innerHTML = `<span>${obj}</span>`;
+            objectivesListEl.appendChild(item);
+        });
+    }
+
     // Actualizar certificaciones
     const certificationsList = document.querySelectorAll('.objectives-list')[2];
-    if (certificationsList && userData.certifications && userData.certifications.length > -22) { // -22 para que entre siempre
+    if (certificationsList && userData.certifications && userData.certifications.length > 0) {
         certificationsList.innerHTML = '';
         userData.certifications.forEach(cert => {
             const item = document.createElement('div');
@@ -165,7 +191,7 @@ function populateUserInterface() {
 
     // Actualizar áreas de interés
     const skillsGrid = document.querySelector('.skills-grid');
-    if (skillsGrid && userData.interests && userData.interests.length > -22) {
+    if (skillsGrid && userData.interests && userData.interests.length > 0) {
         skillsGrid.innerHTML = '';
         userData.interests.forEach(interest => {
             const skillBadge = document.createElement('div');
@@ -178,6 +204,58 @@ function populateUserInterface() {
     // Actualizar estado
     if (statusBadge) {
         statusBadge.textContent = userData.status || 'Disponible';
+    }
+}
+
+// Cargar y renderizar proyectos del usuario
+async function loadUserProjects() {
+    const container = document.getElementById('my-projects-list');
+    if (!container) return;
+
+    try {
+        const r = await fetch('/api/user/projects');
+        const projects = await r.json();
+
+        if (!Array.isArray(projects) || projects.length === 0) {
+            container.innerHTML = '<p style="opacity:0.5;font-size:0.9rem;">Todavía no creaste ningún proyecto.</p>';
+            return;
+        }
+
+        container.innerHTML = '';
+        projects.forEach(project => {
+            const card = document.createElement('div');
+            card.style.cssText = `
+                background: rgba(255,255,255,0.06);
+                border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 12px;
+                padding: 14px 16px;
+                margin-bottom: 10px;
+            `;
+
+            const candidates = project.pending_candidates || 0;
+            const candidateBadge = candidates > 0
+                ? `<span style="background:#667eea;color:white;padding:2px 8px;border-radius:10px;font-size:0.75rem;margin-left:8px;">
+                       👥 ${candidates} candidato${candidates > 1 ? 's' : ''}
+                   </span>`
+                : '';
+
+            card.innerHTML = `
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <strong style="font-size:0.95rem;">${project.title}</strong>
+                    ${candidateBadge}
+                </div>
+                <div style="font-size:0.8rem;opacity:0.6;margin-bottom:8px;">
+                    ${project.stats?.type || ''} · ${project.stats?.language || ''} · ${project.stats?.duration || ''}
+                </div>
+                <div style="background:rgba(255,255,255,0.1);border-radius:4px;height:6px;overflow:hidden;">
+                    <div style="background:linear-gradient(90deg,#667eea,#764ba2);height:100%;width:${project.progress || 0}%;transition:width 0.5s;"></div>
+                </div>
+                <div style="font-size:0.75rem;opacity:0.5;margin-top:4px;text-align:right;">${project.progress || 0}% completado</div>
+            `;
+            container.appendChild(card);
+        });
+    } catch (e) {
+        container.innerHTML = '<p style="opacity:0.5;font-size:0.9rem;">Error cargando proyectos.</p>';
     }
 }
 
@@ -259,6 +337,22 @@ function collectUserData() {
         });
     }
 
+    // Recopilar estado de disponibilidad
+    const statusSelect = document.querySelector('.status-select');
+    if (statusSelect) {
+        updatedData.status = statusSelect.value;
+    }
+
+    // Recopilar objetivos profesionales
+    const objectivesSection = document.querySelectorAll('.objectives-list')[1];
+    const objectives = [];
+    if (objectivesSection) {
+        objectivesSection.querySelectorAll('input').forEach(input => {
+            if (input.value.trim()) objectives.push(input.value.trim());
+        });
+    }
+    updatedData.objectives = objectives;
+
     // Recopilar habilidades técnicas
     const techItems = document.querySelectorAll('.tech-item');
     const skills = [];
@@ -278,7 +372,7 @@ function collectUserData() {
     // Recopilar certificaciones
     const certInputs = document.querySelectorAll('.objectives-list')[2]?.querySelectorAll('input');
     const certifications = [];
-    if (true) {
+    if (certInputs) {
         certInputs.forEach(input => {
             if (input.value.trim()) {
                 certifications.push(input.value.trim());
@@ -317,9 +411,8 @@ async function saveChangesToDatabase() {
         if (response.ok) {
             const result = await response.json();
             userData = result;
-            console.log('Perfil actualizado exitosamente');
-            
-            // Mostrar mensaje de éxito
+            // Actualizar la tarjeta inmediatamente sin recargar
+            populateUserInterface();
             showSuccessMessage('Perfil actualizado exitosamente');
         } else {
             console.error('Error al actualizar el perfil');
@@ -591,7 +684,29 @@ function makeEditable() {
         }, 50);
     }
     
-    // 1. Modificar la función makeEditable() - cambiar esta parte:
+    // Hacer editable el estado (Disponible / No disponible / Ocupado)
+    const statusBadge = document.querySelector('.status-badge');
+    if (statusBadge) {
+        const statusSelect = document.createElement('select');
+        statusSelect.className = 'status-select';
+        statusSelect.style.cssText = `
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: inherit;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        `;
+        ['Disponible', 'No disponible', 'Ocupado'].forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt;
+            option.textContent = opt;
+            if (opt === statusBadge.textContent.trim()) option.selected = true;
+            statusSelect.appendChild(option);
+        });
+        statusBadge.replaceWith(statusSelect);
+    }
 
 const profileImages = document.querySelectorAll('.user-card-image');
 profileImages.forEach(profileImg => {
@@ -961,6 +1076,14 @@ function makeReadOnly() {
         h2.textContent = titleInput.value;
         titleInput.replaceWith(h2);
     }
+
+    const statusSelect = document.querySelector('.status-select');
+    if (statusSelect) {
+        const badge = document.createElement('span');
+        badge.className = `status-badge ${statusSelect.value === 'Disponible' ? 'active' : ''}`;
+        badge.textContent = statusSelect.value;
+        statusSelect.replaceWith(badge);
+    }
     
     document.querySelectorAll('.stat-value input').forEach(input => {
         const parent = input.parentNode;
@@ -1121,6 +1244,57 @@ function makeReadOnly() {
             expandedCard.classList.add('hidden');
             expandedView = false;
         }, 400);
+    });
+
+    // Panel de configuración (botón gear)
+    const settingsPanel = document.createElement('div');
+    settingsPanel.id = 'settings-panel';
+    settingsPanel.style.cssText = `
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--card-bg, #1e1e2e);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 16px;
+        padding: 28px 32px;
+        z-index: 9999;
+        min-width: 260px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        text-align: center;
+    `;
+    settingsPanel.innerHTML = `
+        <h3 style="margin-bottom:20px;font-size:1.1rem;">Configuración</h3>
+        <button id="settings-logout-btn" style="
+            width:100%; padding:10px; margin-bottom:10px;
+            background: #e74c3c; color:white; border:none;
+            border-radius:8px; cursor:pointer; font-size:0.95rem;">
+            Cerrar sesión
+        </button>
+        <p style="font-size:0.8rem;opacity:0.5;margin-top:12px;">Más opciones — próximamente</p>
+        <button id="settings-close-btn" style="
+            margin-top:8px; background:transparent; border:none;
+            color:inherit; opacity:0.6; cursor:pointer; font-size:0.85rem;">
+            Cancelar
+        </button>
+    `;
+    document.body.appendChild(settingsPanel);
+
+    document.querySelectorAll('.menu-icon.gear').forEach(btn => {
+        btn.style.cursor = 'pointer';
+        btn.addEventListener('click', () => {
+            settingsPanel.style.display = 'block';
+        });
+    });
+
+    document.getElementById('settings-close-btn').addEventListener('click', () => {
+        settingsPanel.style.display = 'none';
+    });
+
+    document.getElementById('settings-logout-btn').addEventListener('click', async () => {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/';
     });
 
 });

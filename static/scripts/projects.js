@@ -18,29 +18,47 @@ class ProjectsManager {
     }
 
     async loadProjects() {
+        // Mostrar skeleton mientras carga
+        const cardContainer = document.querySelector('.card-container');
+        if (cardContainer) {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'card-skeleton';
+            skeleton.id = 'card-skeleton';
+            cardContainer.appendChild(skeleton);
+        }
+
         try {
             const response = await fetch(this.apiUrl);
             this.projects = await response.json();
-            console.log('Proyectos cargados:', this.projects.length);
-            
+
+            const skeleton = document.getElementById('card-skeleton');
+            if (skeleton) skeleton.remove();
+
             if (this.projects.length === 0) {
                 this.showNoProjectsMessage();
             }
         } catch (error) {
             console.error('Error cargando proyectos:', error);
+            const skeleton = document.getElementById('card-skeleton');
+            if (skeleton) skeleton.remove();
             this.showNoProjectsMessage();
         }
     }
 
     loadViewedProjects() {
-        if (!window.sessionViewedProjects) {
-            window.sessionViewedProjects = new Set();
-        }
-        this.viewedProjects = window.sessionViewedProjects;
+        // Usar sessionStorage para que los proyectos vistos persistan
+        // aunque el usuario navegue a otra página y vuelva
+        const stored = sessionStorage.getItem('tombers_viewedProjects');
+        this.viewedProjects = stored
+            ? new Set(JSON.parse(stored))
+            : new Set();
     }
 
     saveViewedProjects() {
-        window.sessionViewedProjects = this.viewedProjects;
+        sessionStorage.setItem(
+            'tombers_viewedProjects',
+            JSON.stringify([...this.viewedProjects])
+        );
     }
 
     markProjectAsViewed(projectId) {
@@ -59,8 +77,7 @@ class ProjectsManager {
 
     resetViewedProjects() {
         this.viewedProjects.clear();
-        this.saveViewedProjects();
-        console.log('Proyectos vistos reseteados');
+        sessionStorage.removeItem('tombers_viewedProjects');
     }
 
     showNoProjectsMessage() {
@@ -185,10 +202,18 @@ class ProjectsManager {
 
     updateProjectCard(project) {
         const cardContainer = document.querySelector('.card-container');
-        
+
         // Si no existe la tarjeta, recrearla completamente
         if (cardContainer && !cardContainer.querySelector('.project-card')) {
             this.recreateProjectCard();
+        }
+
+        // Fade-in suave al cambiar proyecto
+        const card = document.getElementById('project-card');
+        if (card) {
+            card.classList.remove('card-entering');
+            void card.offsetWidth; // forzar reflow
+            card.classList.add('card-entering');
         }
 
         // Actualizar contenido de la carta
@@ -410,8 +435,25 @@ class ProjectsManager {
 
     async joinProject(project) {
         try {
-            console.log('Uniéndose al proyecto:', project.title);
-            alert(`¡Te has unido al proyecto: ${project.title}!`);
+            const r = await fetch('/api/interests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ project_id: project.id })
+            });
+            const data = await r.json();
+
+            const toast = document.createElement('div');
+            toast.textContent = r.ok
+                ? `¡Mostraste interés en "${project.title}"! 🚀`
+                : (data.error || 'No se pudo registrar el interés');
+            toast.style.cssText = `
+                position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+                background:${r.ok ? '#667eea' : '#e74c3c'};
+                color:white; padding:12px 24px; border-radius:24px;
+                font-size:0.9rem; z-index:9999;
+                box-shadow:0 4px 16px rgba(0,0,0,0.3);`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
         } catch (error) {
             console.error('Error al unirse al proyecto:', error);
         }

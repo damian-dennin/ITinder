@@ -1,388 +1,561 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for, session, flash
-import json
-import os
+from flask import Flask, render_template, jsonify, request, redirect, url_for, session
 from datetime import datetime
-import hashlib
-import secrets
+from werkzeug.security import generate_password_hash, check_password_hash
+import requests as http
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(16)  # Clave secreta para las sesiones
+app.secret_key = 'tombers-dev-secret-2024'
 
-# Configuración
-DATABASE_FILE = 'projects_database.json'
-USERS_FILE = 'users_database.json'
+# --- Conexión a Supabase via REST API (compatible con Python 3.14) ---
+SUPABASE_URL = "https://hareuuvxfrepfwirhrkw.supabase.co/rest/v1"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhhcmV1dXZ4ZnJlcGZ3aXJocmt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MjEzMjksImV4cCI6MjA5NTk5NzMyOX0.Aplt58VKlVyeA6zFGS_4_rl8668LTxHFcZOKVrbGoOs"
 
-# Estructura base de la base de datos de usuarios
-def initialize_users_database():
-    """Inicializar la base de datos de usuarios"""
-    users_data = {
-        "users": []
-    }
-    
-    with open(USERS_FILE, 'w', encoding='utf-8') as f:
-        json.dump(users_data, f, ensure_ascii=False, indent=2)
-    
-    return users_data
+HEADERS = {
+    "apikey":        SUPABASE_KEY,
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+    "Content-Type":  "application/json",
+    "Prefer":        "return=representation",  # devuelve la fila insertada/actualizada
+}
 
-# Estructura base de la base de datos de proyectos
-def initialize_database():
-    """Inicializar la base de datos con datos de ejemplo"""
-    projects_data = {
-        "projects": []
-    }
-    
-    with open(DATABASE_FILE, 'w', encoding='utf-8') as f:
-        json.dump(projects_data, f, ensure_ascii=False, indent=2)
-    
-    return projects_data
 
-def load_database():
-    """Cargar la base de datos desde el archivo JSON"""
-    if not os.path.exists(DATABASE_FILE):
-        projects_data = {}
-        return projects_data
-    
-    try:
-        with open(DATABASE_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except (json.JSONDecodeError, FileNotFoundError):
-        projects_data = {}
-        return projects_data
+def sb_get(table, filters=None):
+    """SELECT * FROM table WHERE filters"""
+    params = {"select": "*"}
+    if filters:
+        params.update(filters)
+    r = http.get(f"{SUPABASE_URL}/{table}", headers=HEADERS, params=params)
+    r.raise_for_status()
+    return r.json()
 
-def load_users_database():
-    """Cargar la base de datos de usuarios desde el archivo JSON"""
-    if not os.path.exists(USERS_FILE):
-        return initialize_users_database()
-    
-    try:
-        with open(USERS_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except (json.JSONDecodeError, FileNotFoundError):
-        return initialize_users_database()
 
-def save_database(data):
-    """Guardar los datos en el archivo JSON"""
-    with open(DATABASE_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+def sb_insert(table, data):
+    """INSERT INTO table VALUES (data) RETURNING *"""
+    r = http.post(f"{SUPABASE_URL}/{table}", headers=HEADERS, json=data)
+    r.raise_for_status()
+    result = r.json()
+    return result[0] if isinstance(result, list) else result
 
-def save_users_database(data):
-    """Guardar los datos de usuarios en el archivo JSON"""
-    with open(USERS_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
 
+def sb_update(table, filters, data):
+    """UPDATE table SET data WHERE filters RETURNING *"""
+    r = http.patch(f"{SUPABASE_URL}/{table}", headers=HEADERS, params=filters, json=data)
+    r.raise_for_status()
+    result = r.json()
+    return result[0] if isinstance(result, list) and result else None
+
+
+def sb_delete(table, filters):
+    """DELETE FROM table WHERE filters RETURNING *"""
+    r = http.delete(f"{SUPABASE_URL}/{table}", headers=HEADERS, params=filters)
+    r.raise_for_status()
+    result = r.json()
+    return result[0] if isinstance(result, list) and result else None
+
+
+# --- Helpers de contraseña ---
 def hash_password(password):
-    """Encriptar contraseña usando SHA-256"""
-    return hashlib.sha256(password.encode()).hexdigest()
+    return generate_password_hash(password)
 
 def verify_password(password, hashed_password):
-    """Verificar contraseña"""
-    return hash_password(password) == hashed_password
+    return check_password_hash(hashed_password, password)
 
-# Rutas de autenticación
+
+# ============================================================
+# RUTAS DE AUTENTICACIÓN
+# ============================================================
+
 @app.route('/')
 def index():
-    """Página de login/registro"""
     return render_template('index.html')
+
 
 @app.route('/api/register', methods=['POST'])
 def register():
-    """Registrar nuevo usuario"""
     try:
         data = request.get_json()
-        
-        # Validar datos requeridos
+
         required_fields = ['firstName', 'lastName', 'email', 'username', 'password']
         for field in required_fields:
             if field not in data or not data[field]:
                 return jsonify({'error': f'El campo {field} es requerido'}), 400
-        
-        users_db = load_users_database()
-        
-        # Verificar si el email ya existe
-        if any(user['email'] == data['email'] for user in users_db['users']):
+
+        # Verificar duplicados
+        if sb_get('users', {'email': f'eq.{data["email"]}'}):
             return jsonify({'error': 'El email ya está registrado'}), 400
-        
-        # Verificar si el username ya existe
-        if any(user['username'] == data['username'] for user in users_db['users']):
+        if sb_get('users', {'username': f'eq.{data["username"]}'}):
             return jsonify({'error': 'El nombre de usuario ya está en uso'}), 400
-        
-        # Crear nuevo usuario
+
         new_user = {
-            'id': len(users_db['users']) + 1,
-            'firstName': data['firstName'],
-            'lastName': data['lastName'],
-            'email': data['email'],
-            'username': data['username'],
-            'password': hash_password(data['password']),
-            'skills': data.get('skills', '').split(',') if data.get('skills') else [],
-            'age': data.get('age', ''),
-            'birthDate': data.get('birthDate', ''),
-            'languages': data.get('languages', ''),
+            'firstName':      data['firstName'],
+            'lastName':       data['lastName'],
+            'email':          data['email'],
+            'username':       data['username'],
+            'password':       hash_password(data['password']),
+            'skills':         data.get('skills', '').split(',') if isinstance(data.get('skills'), str) and data.get('skills') else [],
+            'age':            data.get('age', ''),
+            'birthDate':      data.get('birthDate', ''),
+            'languages':      data.get('languages', ''),
             'specialization': data.get('specialization', ''),
-            'phone': data.get('phone', ''),
-            'linkedin': data.get('linkedin', ''),
-            'github': data.get('github', ''),
-            'portfolio': data.get('portfolio', ''),
-            'bio': data.get('bio', ''),
-            'status': 'Disponible',
+            'phone':          data.get('phone', ''),
+            'linkedin':       data.get('linkedin', ''),
+            'github':         data.get('github', ''),
+            'portfolio':      data.get('portfolio', ''),
+            'bio':            data.get('bio', ''),
+            'status':         'Disponible',
             'certifications': data.get('certifications', []),
-            'interests': data.get('interests', []),
-            'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'updated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            'interests':      data.get('interests', []),
         }
-        
-        users_db['users'].append(new_user)
-        save_users_database(users_db)
-        
-        # Iniciar sesión automáticamente
-        session['user_id'] = new_user['id']
-        session['username'] = new_user['username']
-        
+
+        user = sb_insert('users', new_user)
+        session['user_id'] = user['id']
+        session['username'] = user['username']
+
         return jsonify({
             'message': 'Usuario registrado exitosamente',
             'user': {
-                'id': new_user['id'],
-                'username': new_user['username'],
-                'firstName': new_user['firstName'],
-                'lastName': new_user['lastName']
+                'id': user['id'], 'username': user['username'],
+                'firstName': user['firstName'], 'lastName': user['lastName'],
             }
         }), 201
-        
+
     except Exception as e:
         return jsonify({'error': f'Error en el registro: {str(e)}'}), 500
 
+
 @app.route('/api/login', methods=['POST'])
 def login():
-    """Iniciar sesión"""
     try:
         data = request.get_json()
-        
         if not data.get('email') or not data.get('password'):
             return jsonify({'error': 'Email y contraseña son requeridos'}), 400
-        
-        users_db = load_users_database()
-        
-        # Buscar usuario por email
-        user = next((u for u in users_db['users'] if u['email'] == data['email']), None)
-        
-        if not user:
+
+        users = sb_get('users', {'email': f'eq.{data["email"]}'})
+        if not users:
             return jsonify({'error': 'Email o contraseña incorrectos'}), 401
-        
-        # Verificar contraseña
+
+        user = users[0]
         if not verify_password(data['password'], user['password']):
             return jsonify({'error': 'Email o contraseña incorrectos'}), 401
-        
-        # Iniciar sesión
+
         session['user_id'] = user['id']
         session['username'] = user['username']
-        
+
         return jsonify({
             'message': 'Inicio de sesión exitoso',
             'user': {
-                'id': user['id'],
-                'username': user['username'],
-                'firstName': user['firstName'],
-                'lastName': user['lastName']
+                'id': user['id'], 'username': user['username'],
+                'firstName': user['firstName'], 'lastName': user['lastName'],
             }
         }), 200
-        
+
     except Exception as e:
         return jsonify({'error': f'Error en el login: {str(e)}'}), 500
 
+
 @app.route('/api/logout', methods=['POST'])
 def logout():
-    """Cerrar sesión"""
     session.clear()
     return jsonify({'message': 'Sesión cerrada exitosamente'}), 200
 
+
+# ============================================================
+# RUTAS DE PERFIL DE USUARIO
+# ============================================================
+
 @app.route('/api/user/profile')
 def get_user_profile():
-    """Obtener perfil del usuario logueado"""
     if 'user_id' not in session:
         return jsonify({'error': 'No hay sesión activa'}), 401
-    
-    users_db = load_users_database()
-    user = next((u for u in users_db['users'] if u['id'] == session['user_id']), None)
-    
-    if not user:
+
+    users = sb_get('users', {'id': f'eq.{session["user_id"]}'})
+    if not users:
         return jsonify({'error': 'Usuario no encontrado'}), 404
-    
-    # Remover la contraseña del response
-    user_profile = {k: v for k, v in user.items() if k != 'password'}
-    return jsonify(user_profile)
+
+    user = users[0]
+    user.pop('password', None)
+    return jsonify(user)
+
 
 @app.route('/api/user/profile', methods=['PUT'])
 def update_user_profile():
-    """Actualizar perfil del usuario logueado"""
     if 'user_id' not in session:
         return jsonify({'error': 'No hay sesión activa'}), 401
-    
     try:
         data = request.get_json()
-        users_db = load_users_database()
-        
-        user_index = next((i for i, u in enumerate(users_db['users']) if u['id'] == session['user_id']), None)
-        
-        if user_index is None:
-            return jsonify({'error': 'Usuario no encontrado'}), 404
-        
-        # Actualizar campos permitidos
-        allowed_fields = ['firstName', 'lastName', 'age', 'birthDate', 'languages', 
-                         'specialization', 'phone', 'linkedin', 'github', 'portfolio', 
-                         'bio', 'skills', 'certifications', 'interests']
-        
+        allowed_fields = [
+            'firstName', 'lastName', 'age', 'birthDate', 'languages',
+            'specialization', 'phone', 'linkedin', 'github', 'portfolio',
+            'bio', 'skills', 'certifications', 'interests', 'status'
+        ]
+        update_data = {}
         for field in allowed_fields:
             if field in data:
                 if field == 'skills' and isinstance(data[field], str):
-                    users_db['users'][user_index][field] = [s.strip() for s in data[field].split(',') if s.strip()]
+                    update_data[field] = [s.strip() for s in data[field].split(',') if s.strip()]
                 else:
-                    users_db['users'][user_index][field] = data[field]
-        
-        users_db['users'][user_index]['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        save_users_database(users_db)
-        
-        # Remover la contraseña del response
-        user_profile = {k: v for k, v in users_db['users'][user_index].items() if k != 'password'}
-        return jsonify(user_profile)
-        
+                    update_data[field] = data[field]
+
+        update_data['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        user = sb_update('users', {'id': f'eq.{session["user_id"]}'}, update_data)
+
+        if not user:
+            return jsonify({'error': 'Usuario no encontrado'}), 404
+
+        user.pop('password', None)
+        return jsonify(user)
+
     except Exception as e:
         return jsonify({'error': f'Error actualizando perfil: {str(e)}'}), 500
 
-# Rutas protegidas
+
+# ============================================================
+# RUTAS PROTEGIDAS (páginas)
+# ============================================================
+
 @app.route('/feed')
 def feed():
-    """Feed de proyectos - requiere autenticación"""
     if 'user_id' not in session:
         return redirect(url_for('index'))
     return render_template('feed.html')
 
+
 @app.route('/bio')
 def bio():
-    """Perfil de usuario - requiere autenticación"""
     if 'user_id' not in session:
         return redirect(url_for('index'))
     return render_template('Bio.html')
 
-# Rutas de proyectos (existentes)
+
+# ============================================================
+# RUTAS DE PROYECTOS
+# ============================================================
+
 @app.route('/api/projects')
 def get_projects():
-    """Obtener todos los proyectos"""
     if 'user_id' not in session:
         return jsonify({'error': 'No autorizado'}), 401
-    
-    db = load_database()
-    return jsonify(db.get('projects', []))
+    all_projects = sb_get('projects')
+    # No mostrar en el feed los proyectos propios del usuario
+    return jsonify([p for p in all_projects if p.get('creator_id') != session['user_id']])
+
 
 @app.route('/api/projects/<int:project_id>')
 def get_project(project_id):
-    """Obtener un proyecto específico por ID"""
     if 'user_id' not in session:
         return jsonify({'error': 'No autorizado'}), 401
-    
-    db = load_database()
-    project = next((p for p in db.get('projects', []) if p['id'] == project_id), None)
-    if project:
-        return jsonify(project)
-    return jsonify({'error': 'Proyecto no encontrado'}), 404
+
+    projects = sb_get('projects', {'id': f'eq.{project_id}'})
+    if not projects:
+        return jsonify({'error': 'Proyecto no encontrado'}), 404
+    return jsonify(projects[0])
+
 
 @app.route('/api/projects', methods=['POST'])
 def create_project():
-    """Crear un nuevo proyecto"""
     if 'user_id' not in session:
         return jsonify({'error': 'No autorizado'}), 401
-    
-    db = load_database()
+
     new_project = request.json
-    
-    # Generar nuevo ID
-    max_id = max([p['id'] for p in db.get('projects', [])], default=0)
-    new_project['id'] = max_id + 1
+    new_project.pop('id', None)
+    new_project['creator_id'] = session['user_id']
     new_project['created_at'] = datetime.now().strftime('%Y-%m-%d')
     new_project['updated_at'] = datetime.now().strftime('%Y-%m-%d')
-    
-    if 'projects' not in db:
-        db['projects'] = []
-    
-    db['projects'].append(new_project)
-    save_database(db)
-    
-    return jsonify(new_project), 201
+
+    project = sb_insert('projects', new_project)
+    return jsonify(project), 201
+
 
 @app.route('/api/projects/<int:project_id>', methods=['PUT'])
 def update_project(project_id):
-    """Actualizar un proyecto existente"""
     if 'user_id' not in session:
         return jsonify({'error': 'No autorizado'}), 401
-    
-    db = load_database()
-    project_index = next((i for i, p in enumerate(db.get('projects', [])) if p['id'] == project_id), None)
-    
-    if project_index is not None:
-        updated_data = request.json
-        updated_data['id'] = project_id
-        updated_data['updated_at'] = datetime.now().strftime('%Y-%m-%d')
-        
-        db['projects'][project_index].update(updated_data)
-        save_database(db)
-        
-        return jsonify(db['projects'][project_index])
-    
-    return jsonify({'error': 'Proyecto no encontrado'}), 404
+
+    existing = sb_get('projects', {'id': f'eq.{project_id}'})
+    if not existing:
+        return jsonify({'error': 'Proyecto no encontrado'}), 404
+
+    if existing[0].get('creator_id') and existing[0]['creator_id'] != session['user_id']:
+        return jsonify({'error': 'No tenés permiso para editar este proyecto'}), 403
+
+    updated_data = request.json
+    updated_data.pop('id', None)
+    updated_data['updated_at'] = datetime.now().strftime('%Y-%m-%d')
+
+    project = sb_update('projects', {'id': f'eq.{project_id}'}, updated_data)
+    return jsonify(project)
+
 
 @app.route('/api/projects/<int:project_id>', methods=['DELETE'])
 def delete_project(project_id):
-    """Eliminar un proyecto"""
     if 'user_id' not in session:
         return jsonify({'error': 'No autorizado'}), 401
-    
-    db = load_database()
-    project_index = next((i for i, p in enumerate(db.get('projects', [])) if p['id'] == project_id), None)
-    
-    if project_index is not None:
-        deleted_project = db['projects'].pop(project_index)
-        save_database(db)
-        return jsonify({'message': 'Proyecto eliminado', 'project': deleted_project})
-    
-    return jsonify({'error': 'Proyecto no encontrado'}), 404
+
+    existing = sb_get('projects', {'id': f'eq.{project_id}'})
+    if not existing:
+        return jsonify({'error': 'Proyecto no encontrado'}), 404
+
+    if existing[0].get('creator_id') and existing[0]['creator_id'] != session['user_id']:
+        return jsonify({'error': 'No tenés permiso para eliminar este proyecto'}), 403
+
+    project = sb_delete('projects', {'id': f'eq.{project_id}'})
+    return jsonify({'message': 'Proyecto eliminado', 'project': project or {}})
+
 
 @app.route('/api/projects/search')
 def search_projects():
-    """Buscar proyectos por título, tecnología o habilidad"""
     if 'user_id' not in session:
         return jsonify({'error': 'No autorizado'}), 401
-    
+
     query = request.args.get('q', '').lower()
-    db = load_database()
-    
-    filtered_projects = []
-    for project in db.get('projects', []):
-        # Buscar en título
-        if query in project['title'].lower():
-            filtered_projects.append(project)
+    all_projects = sb_get('projects')
+
+    filtered = []
+    for project in all_projects:
+        if query in project.get('title', '').lower():
+            filtered.append(project)
             continue
-        
-        # Buscar en tecnologías
         for tech in project.get('technologies', []):
-            if query in tech['name'].lower():
-                filtered_projects.append(project)
+            if query in tech.get('name', '').lower():
+                filtered.append(project)
                 break
         else:
-            # Buscar en habilidades necesarias
             for skill in project.get('skills_needed', []):
                 if query in skill.lower():
-                    filtered_projects.append(project)
+                    filtered.append(project)
                     break
-    
-    return jsonify(filtered_projects)
+
+    return jsonify(filtered)
+
+
+@app.route('/api/user/projects')
+def get_user_projects():
+    """Proyectos creados por el usuario logueado"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    projects = sb_get('projects', {'creator_id': f'eq.{session["user_id"]}'})
+    # Agregar conteo de candidatos pendientes por proyecto
+    for project in projects:
+        interests = sb_get('interests', {
+            'project_id': f'eq.{project["id"]}',
+            'status': 'eq.pending'
+        })
+        project['pending_candidates'] = len(interests)
+    return jsonify(projects)
+
+
+# ============================================================
+# PÁGINAS NUEVAS
+# ============================================================
+
+@app.route('/candidates')
+def candidates():
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+    return render_template('candidates.html')
+
+@app.route('/chat')
+def chat():
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+    return render_template('chat.html')
+
+
+# ============================================================
+# API DE MATCHING
+# ============================================================
+
+@app.route('/api/interests', methods=['POST'])
+def create_interest():
+    """Usuario le da like a un proyecto (swipe derecha)"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+
+    project_id = request.json.get('project_id')
+    if not project_id:
+        return jsonify({'error': 'project_id requerido'}), 400
+
+    # Bloquear que el usuario se interese en su propio proyecto
+    projects = sb_get('projects', {'id': f'eq.{project_id}'})
+    if projects and projects[0].get('creator_id') == session['user_id']:
+        return jsonify({'error': 'No podés mostrar interés en tu propio proyecto'}), 400
+
+    existing = sb_get('interests', {
+        'user_id':    f'eq.{session["user_id"]}',
+        'project_id': f'eq.{project_id}'
+    })
+    if existing:
+        return jsonify({'message': 'Ya mostraste interés en este proyecto'}), 200
+
+    interest = sb_insert('interests', {
+        'user_id':    session['user_id'],
+        'project_id': project_id,
+        'status':     'pending'
+    })
+    return jsonify(interest), 201
+
+
+@app.route('/api/interests/candidates')
+def get_candidates():
+    """Dueño obtiene los candidatos que dieron like a sus proyectos"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+
+    my_projects = sb_get('projects', {'creator_id': f'eq.{session["user_id"]}'})
+    if not my_projects:
+        return jsonify([])
+
+    candidates = []
+    for project in my_projects:
+        interests = sb_get('interests', {'project_id': f'eq.{project["id"]}'})
+        for interest in interests:
+            # Verificar que no existe ya un match para este interés
+            existing_match = sb_get('matches', {'interest_id': f'eq.{interest["id"]}'})
+            if existing_match:
+                # Ya fue procesado — actualizar status por si quedó inconsistente
+                sb_update('interests', {'id': f'eq.{interest["id"]}'}, {'status': 'matched'})
+                continue
+
+            if interest.get('status') == 'rejected':
+                continue
+
+            users = sb_get('users', {'id': f'eq.{interest["user_id"]}'})
+            if users:
+                user = {k: v for k, v in users[0].items() if k != 'password'}
+                candidates.append({
+                    'interest_id': interest['id'],
+                    'project':     project,
+                    'user':        user
+                })
+
+    return jsonify(candidates)
+
+
+@app.route('/api/matches', methods=['POST'])
+def create_match():
+    """Dueño acepta candidato → genera match"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+
+    interest_id = request.json.get('interest_id')
+    interests = sb_get('interests', {'id': f'eq.{interest_id}'})
+    if not interests:
+        return jsonify({'error': 'Interés no encontrado'}), 404
+
+    interest = interests[0]
+    projects = sb_get('projects', {'id': f'eq.{interest["project_id"]}'})
+    if not projects or projects[0].get('creator_id') != session['user_id']:
+        return jsonify({'error': 'No tenés permiso'}), 403
+
+    # Verificar que no existe ya un match para este interés
+    existing = sb_get('matches', {'interest_id': f'eq.{interest_id}'})
+    if existing:
+        return jsonify({'message': 'Match ya existente', 'match_id': existing[0]['id']}), 200
+
+    sb_update('interests', {'id': f'eq.{interest_id}'}, {'status': 'matched'})
+
+    match = sb_insert('matches', {
+        'interest_id': interest_id,
+        'user_id':     interest['user_id'],
+        'owner_id':    session['user_id'],
+        'project_id':  interest['project_id']
+    })
+    return jsonify(match), 201
+
+
+@app.route('/api/interests/<int:interest_id>/reject', methods=['POST'])
+def reject_candidate(interest_id):
+    """Dueño rechaza candidato (swipe izquierda en candidates)"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+
+    sb_update('interests', {'id': f'eq.{interest_id}'}, {'status': 'rejected'})
+    return jsonify({'message': 'Candidato rechazado'}), 200
+
+
+@app.route('/api/matches')
+def get_matches():
+    """Obtener todos los matches del usuario logueado"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+
+    user_id = session['user_id']
+    as_candidate = sb_get('matches', {'user_id':  f'eq.{user_id}'})
+    as_owner     = sb_get('matches', {'owner_id': f'eq.{user_id}'})
+
+    seen_ids = set()
+    enriched = []
+    for match in as_candidate + as_owner:
+        if match['id'] in seen_ids:
+            continue
+        seen_ids.add(match['id'])
+
+        projects = sb_get('projects', {'id': f'eq.{match["project_id"]}'})
+        other_id = match['owner_id'] if match['user_id'] == user_id else match['user_id']
+        others   = sb_get('users', {'id': f'eq.{other_id}'})
+
+        if projects and others:
+            other = {k: v for k, v in others[0].items() if k != 'password'}
+            enriched.append({
+                'match_id':   match['id'],
+                'project':    projects[0],
+                'other_user': other,
+                'created_at': match['created_at']
+            })
+
+    return jsonify(enriched)
+
+
+# ============================================================
+# API DE CHAT
+# ============================================================
+
+@app.route('/api/chat/<int:match_id>')
+def get_messages(match_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+
+    matches = sb_get('matches', {'id': f'eq.{match_id}'})
+    if not matches:
+        return jsonify({'error': 'Match no encontrado'}), 404
+
+    match = matches[0]
+    if match['user_id'] != session['user_id'] and match['owner_id'] != session['user_id']:
+        return jsonify({'error': 'No tenés permiso'}), 403
+
+    messages = sb_get('messages', {'match_id': f'eq.{match_id}', 'order': 'created_at.asc'})
+
+    for msg in messages:
+        users = sb_get('users', {'id': f'eq.{msg["sender_id"]}'})
+        if users:
+            msg['sender_name'] = f"{users[0]['firstName']} {users[0]['lastName']}"
+
+    return jsonify(messages)
+
+
+@app.route('/api/chat/<int:match_id>', methods=['POST'])
+def send_message(match_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+
+    matches = sb_get('matches', {'id': f'eq.{match_id}'})
+    if not matches:
+        return jsonify({'error': 'Match no encontrado'}), 404
+
+    match = matches[0]
+    if match['user_id'] != session['user_id'] and match['owner_id'] != session['user_id']:
+        return jsonify({'error': 'No tenés permiso'}), 403
+
+    content = request.json.get('content', '').strip()
+    if not content:
+        return jsonify({'error': 'El mensaje no puede estar vacío'}), 400
+
+    message = sb_insert('messages', {
+        'match_id':  match_id,
+        'sender_id': session['user_id'],
+        'content':   content
+    })
+    return jsonify(message), 201
+
 
 if __name__ == '__main__':
-    # Inicializar las bases de datos si no existen
-    if not os.path.exists(DATABASE_FILE):
-        initialize_database()
-        print(f"Base de datos de proyectos inicializada en {DATABASE_FILE}")
-    
-    if not os.path.exists(USERS_FILE):
-        initialize_users_database()
-        print(f"Base de datos de usuarios inicializada en {USERS_FILE}")
-    
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -14,10 +14,10 @@
     
     <div class="sidebar" id="sidebar">
         <div class="menu-icons">
-            <div class="menu-icon hamburger"></div>
+            <a href="{{ url_for('candidates') }}" class="menu-icon hamburger"></a>
             <div class="menu-icon gear"></div>
             <a href="{{ url_for('bio') }}" class="menu-icon user"></a>
-            <div class="menu-icon download"></div>
+            <a href="{{ url_for('chat') }}" class="menu-icon download"></a>
         </div>
         <label class="toggle-switch">
             <input type="checkbox" id="theme-toggle">
@@ -32,8 +32,7 @@
             <a href="{{ url_for('feed') }}" class="menu-icon house"></a>
             <div class="menu-icon gear"></div>
             <a href="{{ url_for('bio') }}" class="menu-icon user"></a>
-            <div class="menu-icon download"></div>
-
+            <a href="{{ url_for('chat') }}" class="menu-icon download"></a>
         </div>
         <label class="toggle-switch">
             <input type="checkbox" id="theme-togglemo">
@@ -77,11 +76,19 @@
         <div class="like-indicator">Join me</div>
     </div>
 
-    <div class="create-project-container">
-    <button class="create-project-btn" id="create-project-btn">
-        <span class="create-icon">+</span>
-        Crear proyecto
-    </button>
+    <div class="create-project-container" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+        <a href="/candidates" class="create-project-btn" id="candidates-btn" style="text-decoration:none; display:none;">
+            <span class="create-icon">👥</span>
+            Candidatos
+        </a>
+        <a href="/chat" class="create-project-btn" style="text-decoration:none; background: linear-gradient(135deg, #4a2c50, #764ba2);">
+            <span class="create-icon">💬</span>
+            Mis chats
+        </a>
+        <button class="create-project-btn" id="create-project-btn">
+            <span class="create-icon">+</span>
+            Crear proyecto
+        </button>
     </div>
 
     <div class="expanded-card hidden" id="expanded-card">

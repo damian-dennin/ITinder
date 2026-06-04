@@ -80,15 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 400);
     }
 
-
-    function closeCreateModal() {
-        createProjectCard.classList.remove('visible');
-        setTimeout(() => {
-            createProjectCard.classList.add('hidden');
-            createForm.reset();
-        }, 400);
-    }
-
     // Event listeners para crear proyecto
     closeCreate?.addEventListener('click', closeCreateModal);
     cancelCreate?.addEventListener('click', closeCreateModal);
@@ -106,26 +97,71 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Corregir el form submit (había código duplicado)
-    createForm?.addEventListener('submit', (e) => {
+    createForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const formData = {
-            name: document.getElementById('project-name').value,
+        // Parsear tamaño de equipo (formato "5/10" o solo "10")
+        const teamSizeRaw = document.getElementById('team-size').value;
+        const teamParts = teamSizeRaw.split('/').map(s => parseInt(s.trim()) || 0);
+        const teamCurrent = teamParts.length > 1 ? teamParts[0] : 1;
+        const teamMax = teamParts.length > 1 ? teamParts[1] : teamParts[0];
+
+        // Parsear tecnologías: "Python, React" → [{name:"Python",icon:"Pyth"}, ...]
+        const technologiesRaw = document.getElementById('technologies').value;
+        const technologies = technologiesRaw
+            .split(',')
+            .map(t => t.trim())
+            .filter(t => t)
+            .map(t => ({ name: t, icon: t.substring(0, 4) }));
+
+        // Parsear habilidades buscadas
+        const skillsRaw = document.getElementById('skills').value;
+        const skills_needed = skillsRaw
+            .split(',')
+            .map(s => s.trim())
+            .filter(s => s);
+
+        const projectData = {
+            title: document.getElementById('project-name').value,
             status: document.getElementById('project-status').value,
-            teamSize: document.getElementById('team-size').value,
-            duration: document.getElementById('duration').value,
-            language: document.getElementById('language').value,
-            type: document.getElementById('project-type').value,
             description: document.getElementById('description').value,
-            technologies: document.getElementById('technologies').value.split(',').map(t => t.trim()),
-            skills: document.getElementById('skills').value.split(',').map(s => s.trim()),
-            image: selectedImageFile // Agregar la imagen al formData
+            image_url: '',
+            stats: {
+                team_current: teamCurrent,
+                team_max: teamMax,
+                duration: document.getElementById('duration').value || 'Indefinido',
+                language: document.getElementById('language').value,
+                type: document.getElementById('project-type').value
+            },
+            technologies: technologies,
+            skills_needed: skills_needed,
+            objectives: [],
+            progress: 0
         };
 
-        console.log('Nuevo proyecto creado:', formData);
-        alert('¡Proyecto creado exitosamente!');
-        closeCreateModal();
+        try {
+            const response = await fetch('/api/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(projectData)
+            });
+
+            if (response.ok) {
+                const newProject = await response.json();
+                // Agregar el proyecto al manager sin recargar la página
+                if (window.projectsManager) {
+                    window.projectsManager.projects.push(newProject);
+                }
+                closeCreateModal();
+                alert('¡Proyecto creado exitosamente!');
+            } else {
+                const err = await response.json();
+                alert('Error al crear el proyecto: ' + (err.error || 'Error desconocido'));
+            }
+        } catch (error) {
+            console.error('Error al crear proyecto:', error);
+            alert('Error de conexión al crear el proyecto');
+        }
     });
     
     // Theme toggles
@@ -205,12 +241,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function handleStart(e) {
-        // Asegurar que estamos trabajando con la tarjeta correcta
         card = document.getElementById('project-card');
-        if (!card) {
-            console.warn('No se encontró la tarjeta para iniciar el drag');
-            return;
-        }
+        if (!card) return;
+
+        // Detener cualquier animación CSS activa para que el drag tome control
+        card.classList.remove('card-entering');
+        card.style.animation = 'none';
 
         isDragging = true;
 
@@ -359,11 +395,101 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleSwipe(direction) {
         if (window.projectsManager) {
+            // Guardar el proyecto actual ANTES de que cambie
+            const currentProject = window.projectsManager.projects[window.projectsManager.currentProjectIndex];
+
             window.projectsManager.handleCardSwipe(direction);
+
+            if (direction === 'right' && currentProject) {
+                fetch('/api/interests', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_id: currentProject.id })
+                })
+                .then(r => r.json())
+                .then(() => showMatchToast('¡Mostraste interés en este proyecto! 🚀'))
+                .catch(err => console.error('Error guardando interés:', err));
+            }
         }
     }
+
+    function showMatchToast(msg) {
+        const toast = document.createElement('div');
+        toast.textContent = msg;
+        toast.style.cssText = `
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: #667eea; color: white; padding: 12px 24px;
+            border-radius: 24px; font-size: 0.95rem; z-index: 9999;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.3s ease;
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2500);
+    }
+
+    // Mostrar "Ver candidatos" solo si el usuario tiene proyectos creados
+    fetch('/api/user/projects')
+        .then(r => r.json())
+        .then(projects => {
+            if (Array.isArray(projects) && projects.length > 0) {
+                const btn = document.getElementById('candidates-btn');
+                if (btn) btn.style.display = 'flex';
+            }
+        })
+        .catch(() => {});
 
     // Hacer funciones disponibles globalmente
     window.handleSwipe = handleSwipe;
     window.setupSwipeHandlers = setupSwipeHandlers;
+
+    // Panel de configuración (botón gear)
+    const settingsPanel = document.createElement('div');
+    settingsPanel.id = 'settings-panel';
+    settingsPanel.style.cssText = `
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--card-bg, #1e1e2e);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 16px;
+        padding: 28px 32px;
+        z-index: 9999;
+        min-width: 260px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        text-align: center;
+    `;
+    settingsPanel.innerHTML = `
+        <h3 style="margin-bottom:20px;font-size:1.1rem;">Configuración</h3>
+        <button id="settings-logout-btn" style="
+            width:100%; padding:10px; margin-bottom:10px;
+            background: #e74c3c; color:white; border:none;
+            border-radius:8px; cursor:pointer; font-size:0.95rem;">
+            Cerrar sesión
+        </button>
+        <p style="font-size:0.8rem;opacity:0.5;margin-top:12px;">Más opciones — próximamente</p>
+        <button id="settings-close-btn" style="
+            margin-top:8px; background:transparent; border:none;
+            color:inherit; opacity:0.6; cursor:pointer; font-size:0.85rem;">
+            Cancelar
+        </button>
+    `;
+    document.body.appendChild(settingsPanel);
+
+    document.querySelectorAll('.menu-icon.gear').forEach(btn => {
+        btn.style.cursor = 'pointer';
+        btn.addEventListener('click', () => {
+            settingsPanel.style.display = 'block';
+        });
+    });
+
+    document.getElementById('settings-close-btn').addEventListener('click', () => {
+        settingsPanel.style.display = 'none';
+    });
+
+    document.getElementById('settings-logout-btn').addEventListener('click', async () => {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/';
+    });
 });
