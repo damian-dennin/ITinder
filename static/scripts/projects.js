@@ -48,7 +48,7 @@ class ProjectsManager {
     loadViewedProjects() {
         // Usar sessionStorage para que los proyectos vistos persistan
         // aunque el usuario navegue a otra página y vuelva
-        const stored = sessionStorage.getItem('tombers_viewedProjects');
+        const stored = sessionStorage.getItem('stackr_viewedProjects');
         this.viewedProjects = stored
             ? new Set(JSON.parse(stored))
             : new Set();
@@ -56,7 +56,7 @@ class ProjectsManager {
 
     saveViewedProjects() {
         sessionStorage.setItem(
-            'tombers_viewedProjects',
+            'stackr_viewedProjects',
             JSON.stringify([...this.viewedProjects])
         );
     }
@@ -77,7 +77,7 @@ class ProjectsManager {
 
     resetViewedProjects() {
         this.viewedProjects.clear();
-        sessionStorage.removeItem('tombers_viewedProjects');
+        sessionStorage.removeItem('stackr_viewedProjects');
     }
 
     showNoProjectsMessage() {

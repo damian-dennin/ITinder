@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import requests as http
 
 app = Flask(__name__)
-app.secret_key = 'tombers-dev-secret-2024'
+app.secret_key = 'stackr-dev-secret-2024'
 
 # --- Conexión a Supabase via REST API (compatible con Python 3.14) ---
 SUPABASE_URL = "https://hareuuvxfrepfwirhrkw.supabase.co/rest/v1"
