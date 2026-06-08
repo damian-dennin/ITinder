@@ -7,22 +7,55 @@
     
     <title>Stackr</title>
 </head>
-<body style="justify-content: center; align-items: center;">
+<body class="feed-body">
     <div class="logo-container">
         <img src="/static/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img">
     </div>
     
     <div class="sidebar" id="sidebar">
-        <div class="menu-icons">
-            <a href="{{ url_for('candidates') }}" class="menu-icon hamburger"></a>
-            <div class="menu-icon gear"></div>
-            <a href="{{ url_for('bio') }}" class="menu-icon user"></a>
-            <a href="{{ url_for('chat') }}" class="menu-icon download"></a>
+        <div class="sidebar-brand">
+            <img src="/static/imagenes/logoTomberS.png" alt="Stackr" class="sidebar-brand-logo">
+            <div class="sidebar-brand-copy">
+                <strong>Stackr</strong>
+                <span>Panel</span>
+            </div>
         </div>
-        <label class="toggle-switch">
-            <input type="checkbox" id="theme-toggle">
-            <span class="slider"></span>
-        </label>
+        <div class="menu-icons">
+            <a href="{{ url_for('feed') }}" class="sidebar-link sidebar-link-active">
+                <span class="menu-icon house"></span>
+                <span class="sidebar-label">Feed</span>
+            </a>
+            <a href="{{ url_for('applications') }}" class="sidebar-link">
+                <span class="menu-icon clipboard"></span>
+                <span class="sidebar-label">Postulaciones</span>
+            </a>
+            <a href="{{ url_for('candidates') }}" class="sidebar-link">
+                <span class="menu-icon hamburger"></span>
+                <span class="sidebar-label">Candidatos</span>
+            </a>
+            <a href="{{ url_for('chat') }}" class="sidebar-link">
+                <span class="menu-icon download"></span>
+                <span class="sidebar-label">Chats</span>
+            </a>
+            <a href="{{ url_for('bio') }}" class="sidebar-link">
+                <span class="menu-icon user"></span>
+                <span class="sidebar-label">Perfil</span>
+            </a>
+            <button class="sidebar-link sidebar-link-ghost" type="button">
+                <span class="menu-icon gear"></span>
+                <span class="sidebar-label">Ajustes</span>
+            </button>
+        </div>
+        <div class="sidebar-footer">
+            <div class="sidebar-theme-meta">
+                <span class="menu-icon theme"></span>
+                <span class="sidebar-footer-label">Tema</span>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
     </div>
     <div class="sidebar-trigger" id="sidebar-trigger"></div>
 
@@ -30,6 +63,7 @@
         <img src="/static/imagenes/logoTomberS.png" alt="Logo Tomber Sur" class="logo-img-mini">        
         <div class="menu-icons">
             <a href="{{ url_for('feed') }}" class="menu-icon house"></a>
+            <a href="{{ url_for('applications') }}" class="menu-icon clipboard"></a>
             <div class="menu-icon gear"></div>
             <a href="{{ url_for('bio') }}" class="menu-icon user"></a>
             <a href="{{ url_for('chat') }}" class="menu-icon download"></a>
@@ -38,6 +72,77 @@
             <input type="checkbox" id="theme-togglemo">
             <span class="slider"></span>
         </label>
+    </div>
+
+    <div class="swipe-feedback" id="swipe-feedback" aria-hidden="true"></div>
+
+    <div class="tutorial-overlay" id="tutorial-overlay" aria-hidden="true">
+        <div class="tutorial-panel" role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
+            <button class="tutorial-close" id="tutorial-close" type="button" aria-label="Cerrar tutorial">×</button>
+            <div class="tutorial-header">
+                <p class="tutorial-kicker">Como funciona</p>
+                <h2 class="tutorial-title" id="tutorial-title">Desliza para decidir</h2>
+                <p class="tutorial-description">
+                    Izquierda para pasar, derecha para hacer match y arriba para ver el detalle.
+                </p>
+            </div>
+            <div class="tutorial-showcase">
+                <div class="tutorial-demo">
+                    <div class="tutorial-demo-stage" id="tutorial-demo-stage" data-state="idle">
+                        <div class="tutorial-demo-label tutorial-demo-label-up">&#8593; Ver mas</div>
+                        <div class="tutorial-demo-label tutorial-demo-label-left">&#8592; Pasar</div>
+                        <div class="tutorial-demo-label tutorial-demo-label-right">&#8594; Match</div>
+                        <div class="tutorial-demo-card" id="tutorial-demo-card">
+                            <div class="tutorial-demo-image">
+                                <span class="tutorial-demo-chip">Proyecto de prueba</span>
+                            </div>
+                            <div class="tutorial-demo-content">
+                                <div class="tutorial-demo-header">
+                                    <h3>Travel Buddy</h3>
+                                    <span>3/6</span>
+                                </div>
+                                <p>Buscamos frontend y UX para lanzar una app de viajes entre amigos.</p>
+                                <div class="tutorial-demo-stack">
+                                    <span>React</span>
+                                    <span>Node</span>
+                                    <span>UI</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tutorial-steps">
+                    <div class="tutorial-step tutorial-step-left">
+                        <span class="tutorial-step-badge">&#8592; Swipe left</span>
+                        <div class="tutorial-step-copy">
+                            <h3>Pasar</h3>
+                            <p>Sigue con el siguiente proyecto.</p>
+                        </div>
+                    </div>
+                    <div class="tutorial-step tutorial-step-right">
+                        <span class="tutorial-step-badge">&#8594; Swipe right</span>
+                        <div class="tutorial-step-copy">
+                            <h3>Match</h3>
+                            <p>Te sumas al proyecto.</p>
+                        </div>
+                    </div>
+                    <div class="tutorial-step tutorial-step-up">
+                        <span class="tutorial-step-badge">&#8593; Swipe up</span>
+                        <div class="tutorial-step-copy">
+                            <h3>Ver mas</h3>
+                            <p>Abre la ficha completa.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="tutorial-demo-caption" id="tutorial-demo-caption">
+                    Desliza la card para probar los tres gestos.
+                </p>
+            </div>
+            <div class="tutorial-actions">
+                <button class="tutorial-btn tutorial-btn-secondary" id="tutorial-skip" type="button">Cerrar</button>
+                <button class="tutorial-btn tutorial-btn-primary" id="tutorial-start" type="button">Entendido</button>
+            </div>
+        </div>
     </div>
 
 
@@ -71,9 +176,9 @@
     </div>
 
     <div class="status-indicators" id="status-indicators">
-        <div class="dislike-indicator">Pass away</div>
-        <div class="ampliar-indicator"> ↑ Show more ↑</div>
-        <div class="like-indicator">Join me</div>
+        <div class="dislike-indicator">PASAR</div>
+        <div class="ampliar-indicator">SWIPE UP · VER MAS</div>
+        <div class="like-indicator">MATCH</div>
     </div>
 
     <div class="create-project-container" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">

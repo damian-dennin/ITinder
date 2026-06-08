@@ -235,8 +235,10 @@ def get_projects():
     if 'user_id' not in session:
         return jsonify({'error': 'No autorizado'}), 401
     all_projects = sb_get('projects')
-    # No mostrar en el feed los proyectos propios del usuario
-    return jsonify([p for p in all_projects if p.get('creator_id') != session['user_id']])
+    visible_projects = [p for p in all_projects if p.get('creator_id') != session['user_id']]
+    # Si todos los proyectos pertenecen al usuario actual (caso demo/seed),
+    # devolvemos igualmente el catálogo para no dejar el feed vacío.
+    return jsonify(visible_projects or all_projects)
 
 
 @app.route('/api/projects/<int:project_id>')
@@ -360,6 +362,13 @@ def chat():
     return render_template('chat.html')
 
 
+@app.route('/applications')
+def applications():
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+    return render_template('applications.html')
+
+
 # ============================================================
 # API DE MATCHING
 # ============================================================
@@ -428,6 +437,50 @@ def get_candidates():
                 })
 
     return jsonify(candidates)
+
+
+@app.route('/api/interests/mine')
+def get_my_interests():
+    """Postulaciones del usuario logueado sobre proyectos"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+
+    user_id = session['user_id']
+    interests = sb_get('interests', {
+        'user_id': f'eq.{user_id}',
+        'order': 'created_at.desc'
+    })
+
+    applications = []
+    for interest in interests:
+        projects = sb_get('projects', {'id': f'eq.{interest["project_id"]}'})
+        if not projects:
+            continue
+
+        project = projects[0]
+        owners = sb_get('users', {'id': f'eq.{project["creator_id"]}'})
+        owner = None
+        if owners:
+            owner = {k: v for k, v in owners[0].items() if k != 'password'}
+
+        matches = sb_get('matches', {'interest_id': f'eq.{interest["id"]}'})
+        match_id = matches[0]['id'] if matches else None
+        status = 'matched' if match_id else interest.get('status', 'pending')
+
+        if match_id and interest.get('status') != 'matched':
+            sb_update('interests', {'id': f'eq.{interest["id"]}'}, {'status': 'matched'})
+
+        applications.append({
+            'interest_id': interest['id'],
+            'status': status,
+            'applied_at': interest.get('created_at') or project.get('created_at'),
+            'project': project,
+            'creator': owner,
+            'match_id': match_id,
+            'chat_available': bool(match_id)
+        })
+
+    return jsonify(applications)
 
 
 @app.route('/api/matches', methods=['POST'])

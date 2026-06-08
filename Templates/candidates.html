@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/static/styles/style.css">
     <title>Stackr — Candidatos</title>
 </head>
-<body style="justify-content: center; align-items: center;">
+<body class="feed-body">
     <div class="logo-container">
         <a href="{{ url_for('feed') }}">
             <img src="/static/imagenes/logoTomberS.png" alt="Logo TomberS" class="logo-img">
@@ -14,16 +14,49 @@
     </div>
 
     <div class="sidebar" id="sidebar">
-        <div class="menu-icons">
-            <div class="menu-icon hamburger"></div>
-            <div class="menu-icon gear" id="gear-btn"></div>
-            <a href="{{ url_for('bio') }}" class="menu-icon user"></a>
-            <a href="{{ url_for('chat') }}" class="menu-icon download"></a>
+        <div class="sidebar-brand">
+            <img src="/static/imagenes/logoTomberS.png" alt="Stackr" class="sidebar-brand-logo">
+            <div class="sidebar-brand-copy">
+                <strong>Stackr</strong>
+                <span>Panel</span>
+            </div>
         </div>
-        <label class="toggle-switch">
-            <input type="checkbox" id="theme-toggle">
-            <span class="slider"></span>
-        </label>
+        <div class="menu-icons">
+            <a href="{{ url_for('feed') }}" class="sidebar-link">
+                <span class="menu-icon house"></span>
+                <span class="sidebar-label">Feed</span>
+            </a>
+            <a href="{{ url_for('applications') }}" class="sidebar-link">
+                <span class="menu-icon clipboard"></span>
+                <span class="sidebar-label">Postulaciones</span>
+            </a>
+            <a href="{{ url_for('candidates') }}" class="sidebar-link sidebar-link-active">
+                <span class="menu-icon hamburger"></span>
+                <span class="sidebar-label">Candidatos</span>
+            </a>
+            <a href="{{ url_for('chat') }}" class="sidebar-link">
+                <span class="menu-icon download"></span>
+                <span class="sidebar-label">Chats</span>
+            </a>
+            <a href="{{ url_for('bio') }}" class="sidebar-link">
+                <span class="menu-icon user"></span>
+                <span class="sidebar-label">Perfil</span>
+            </a>
+            <button class="sidebar-link sidebar-link-ghost" type="button">
+                <span class="menu-icon gear"></span>
+                <span class="sidebar-label">Ajustes</span>
+            </button>
+        </div>
+        <div class="sidebar-footer">
+            <div class="sidebar-theme-meta">
+                <span class="menu-icon theme"></span>
+                <span class="sidebar-footer-label">Tema</span>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
     </div>
     <div class="sidebar-trigger" id="sidebar-trigger"></div>
 
@@ -31,6 +64,7 @@
         <img src="/static/imagenes/logoTomberS.png" alt="Logo TomberS" class="logo-img-mini">
         <div class="menu-icons">
             <a href="{{ url_for('feed') }}" class="menu-icon house"></a>
+            <a href="{{ url_for('applications') }}" class="menu-icon clipboard"></a>
             <div class="menu-icon gear" id="gear-btn-mo"></div>
             <a href="{{ url_for('bio') }}" class="menu-icon user"></a>
             <a href="{{ url_for('chat') }}" class="menu-icon download"></a>
@@ -40,6 +74,8 @@
             <span class="slider"></span>
         </label>
     </div>
+
+    <div class="swipe-feedback" id="swipe-feedback" aria-hidden="true"></div>
 
     <!-- Tarjeta de candidato -->
     <div class="card-container">
@@ -70,9 +106,9 @@
     </div>
 
     <div class="status-indicators" id="status-indicators">
-        <div class="dislike-indicator">Rechazar</div>
-        <div class="ampliar-indicator"> ↑ Ver más ↑</div>
-        <div class="like-indicator">¡Match!</div>
+        <div class="dislike-indicator">PASAR</div>
+        <div class="ampliar-indicator">SWIPE UP · VER MAS</div>
+        <div class="like-indicator">MATCH</div>
     </div>
 
     <!-- Vista expandida del candidato -->

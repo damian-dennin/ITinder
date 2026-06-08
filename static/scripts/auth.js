@@ -80,6 +80,7 @@ class AuthManager {
                 
                 // Guardar datos del usuario en sessionStorage
                 sessionStorage.setItem('user', JSON.stringify(data.user));
+                sessionStorage.removeItem('stackr_viewedProjects');
                 
                 // Redirigir al feed después de un breve delay
                 setTimeout(() => {
@@ -138,6 +139,7 @@ class AuthManager {
                 
                 // Guardar datos del usuario en sessionStorage
                 sessionStorage.setItem('user', JSON.stringify(data.user));
+                sessionStorage.removeItem('stackr_viewedProjects');
                 
                 // Redirigir al feed después de un breve delay
                 setTimeout(() => {

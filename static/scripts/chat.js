@@ -2,6 +2,79 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentMatchId = null;
     let currentUserId = null;
     let pollingInterval = null;
+    const requestedMatchId = new URLSearchParams(window.location.search).get('match');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarTrigger = document.getElementById('sidebar-trigger');
+    const toggle = document.getElementById('theme-toggle');
+    const togglemo = document.getElementById('theme-togglemo');
+
+    function syncThemeToggles(sourceToggle, targetToggle) {
+        if (targetToggle) {
+            targetToggle.checked = sourceToggle.checked;
+        }
+        document.body.classList.toggle('dark-mode', sourceToggle.checked);
+    }
+
+    toggle?.addEventListener('change', () => {
+        syncThemeToggles(toggle, togglemo);
+    });
+
+    togglemo?.addEventListener('change', () => {
+        syncThemeToggles(togglemo, toggle);
+    });
+
+    sidebarTrigger?.addEventListener('mouseenter', () => sidebar?.classList.add('active'));
+    sidebar?.addEventListener('mouseleave', () => sidebar.classList.remove('active'));
+
+    const settingsPanel = document.createElement('div');
+    settingsPanel.id = 'settings-panel';
+    settingsPanel.style.cssText = `
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--card-bg, #1e1e2e);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 16px;
+        padding: 28px 32px;
+        z-index: 9999;
+        min-width: 260px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        text-align: center;
+    `;
+    settingsPanel.innerHTML = `
+        <h3 style="margin-bottom:20px;font-size:1.1rem;">Configuración</h3>
+        <button id="settings-logout-btn" style="
+            width:100%; padding:10px; margin-bottom:10px;
+            background: #e74c3c; color:white; border:none;
+            border-radius:8px; cursor:pointer; font-size:0.95rem;">
+            Cerrar sesión
+        </button>
+        <p style="font-size:0.8rem;opacity:0.5;margin-top:12px;">Más opciones — próximamente</p>
+        <button id="settings-close-btn" style="
+            margin-top:8px; background:transparent; border:none;
+            color:inherit; opacity:0.6; cursor:pointer; font-size:0.85rem;">
+            Cancelar
+        </button>
+    `;
+    document.body.appendChild(settingsPanel);
+
+    document.querySelectorAll('.menu-icon.gear').forEach((button) => {
+        button.style.cursor = 'pointer';
+        button.addEventListener('click', () => {
+            settingsPanel.style.display = 'block';
+        });
+    });
+
+    document.getElementById('settings-close-btn')?.addEventListener('click', () => {
+        settingsPanel.style.display = 'none';
+    });
+
+    document.getElementById('settings-logout-btn')?.addEventListener('click', async () => {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/';
+    });
 
     // Cargar perfil y matches en paralelo para reducir el tiempo de carga
     async function init() {
@@ -36,6 +109,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         container.innerHTML = '';
+        let firstMatch = null;
+        let preferredMatch = null;
+        let preferredItem = null;
+        let firstItem = null;
+
         matches.forEach((match, index) => {
             const item = document.createElement('div');
             item.className = 'match-item';
@@ -58,12 +136,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
             container.appendChild(item);
 
-            // Auto-abrir el primer match
             if (index === 0) {
-                item.classList.add('active');
-                openChat(match);
+                firstMatch = match;
+                firstItem = item;
+            }
+
+            if (requestedMatchId && String(match.match_id) === String(requestedMatchId)) {
+                preferredMatch = match;
+                preferredItem = item;
             }
         });
+
+        const targetMatch = preferredMatch || firstMatch;
+        const targetItem = preferredItem || firstItem;
+
+        if (targetMatch && targetItem) {
+            targetItem.classList.add('active');
+            openChat(targetMatch);
+        }
     }
 
     function openChat(match) {

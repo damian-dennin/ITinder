@@ -22,6 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Agregar al inicio del archivo, después de las variables globales existentes
 let userData = null;
 
+    function setPageChromeHidden(hidden) {
+        document.body.classList.toggle('feed-chrome-hidden', hidden);
+        if (hidden && sidebar.classList.contains('active')) {
+            sidebar.classList.remove('active');
+        }
+    }
+
     initEditButton();
         // Cargar datos del usuario al iniciar
         loadUserData();
@@ -1158,6 +1165,7 @@ function makeReadOnly() {
 
     function handleStart(e) {
         isDragging = true;
+        setPageChromeHidden(true);
 
         if (sidebar.classList.contains('active')) {
             sidebar.classList.remove('active');
@@ -1224,6 +1232,11 @@ function makeReadOnly() {
             // Volver a posición original
             card.style.transition = 'transform 0.5s ease';
             card.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                if (!expandedView && !isDragging) {
+                    setPageChromeHidden(false);
+                }
+            }, 220);
         }
     }
 
@@ -1243,6 +1256,7 @@ function makeReadOnly() {
         setTimeout(() => {
             expandedCard.classList.add('hidden');
             expandedView = false;
+            setPageChromeHidden(false);
         }, 400);
     });
 

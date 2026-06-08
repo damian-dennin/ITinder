@@ -1,4 +1,3 @@
-// FEED - Versión mejorada con mejor gestión de eventos
 document.addEventListener('DOMContentLoaded', () => {
     const expandedCard = document.getElementById('expanded-card');
     const closeExpanded = document.getElementById('close-expanded');
@@ -6,26 +5,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let card = document.getElementById('project-card');
     const statusIndicators = document.getElementById('status-indicators');
-    const likeIndicator = statusIndicators.querySelector('.like-indicator');
-    const dislikeIndicator = statusIndicators.querySelector('.dislike-indicator');
-    const ampliarIndicator = statusIndicators.querySelector('.ampliar-indicator');
+    const likeIndicator = statusIndicators?.querySelector('.like-indicator');
+    const dislikeIndicator = statusIndicators?.querySelector('.dislike-indicator');
+    const ampliarIndicator = statusIndicators?.querySelector('.ampliar-indicator');
+    const swipeFeedback = document.getElementById('swipe-feedback');
     const sidebar = document.getElementById('sidebar');
     const sidebarTrigger = document.getElementById('sidebar-trigger');
-    
 
     const createProjectBtn = document.getElementById('create-project-btn');
     const createProjectCard = document.getElementById('create-project-card');
     const closeCreate = document.getElementById('close-create');
     const cancelCreate = document.getElementById('cancel-create');
     const createForm = document.getElementById('create-form');
-
+    const tutorialOverlay = document.getElementById('tutorial-overlay');
+    const tutorialClose = document.getElementById('tutorial-close');
+    const tutorialSkip = document.getElementById('tutorial-skip');
+    const tutorialStart = document.getElementById('tutorial-start');
+    const tutorialDemoStage = document.getElementById('tutorial-demo-stage');
+    const tutorialDemoCard = document.getElementById('tutorial-demo-card');
+    const tutorialDemoCaption = document.getElementById('tutorial-demo-caption');
 
     const projectImageInput = document.getElementById('project-image');
     const imagePreview = document.getElementById('image-preview');
     const previewImg = document.getElementById('preview-img');
     const removeImageBtn = document.getElementById('remove-image');
-    const imagePlaceholder = imagePreview.querySelector('.image-placeholder');
-    
+    const imagePlaceholder = imagePreview?.querySelector('.image-placeholder');
+    const tutorialDemoMessages = {
+        idle: 'Desliza la card para probar los gestos.',
+        left: 'Swipe left: pasas al siguiente proyecto.',
+        right: 'Swipe right: haces match con el proyecto.',
+        up: 'Swipe up: abres la ficha completa.'
+    };
+
     let selectedImageFile = null;
 
     let startX = 0;
@@ -34,57 +45,172 @@ document.addEventListener('DOMContentLoaded', () => {
     let offsetY = 0;
     let isDragging = false;
     let isHoveringSidebar = false;
+    let tutorialDemoDragging = false;
+    let tutorialDemoAnimating = false;
+    let tutorialDemoStartX = 0;
+    let tutorialDemoStartY = 0;
+    let tutorialDemoOffsetX = 0;
+    let tutorialDemoOffsetY = 0;
+    const swipeFeedbackPalette = {
+        right: {
+            rgb: '76, 219, 139',
+            x: '82%',
+            y: '50%'
+        },
+        left: {
+            rgb: '255, 99, 110',
+            x: '18%',
+            y: '50%'
+        },
+        up: {
+            rgb: '84, 190, 255',
+            x: '50%',
+            y: '18%'
+        }
+    };
 
+    function setSwipeFeedback(direction, strength = 0) {
+        if (!swipeFeedback) return;
+
+        const clampedStrength = Math.max(0, Math.min(1, strength));
+
+        if (!direction || clampedStrength <= 0.01) {
+            swipeFeedback.style.setProperty('--swipe-feedback-opacity', '0');
+            return;
+        }
+
+        const palette = swipeFeedbackPalette[direction];
+        if (!palette) return;
+
+        swipeFeedback.style.setProperty('--swipe-feedback-rgb', palette.rgb);
+        swipeFeedback.style.setProperty('--swipe-feedback-origin-x', palette.x);
+        swipeFeedback.style.setProperty('--swipe-feedback-origin-y', palette.y);
+        swipeFeedback.style.setProperty('--swipe-feedback-opacity', clampedStrength.toFixed(3));
+    }
+
+    function clearSwipeFeedback() {
+        if (!swipeFeedback) return;
+        swipeFeedback.style.setProperty('--swipe-feedback-opacity', '0');
+    }
+
+    function setFeedChromeHidden(hidden) {
+        document.body.classList.toggle('feed-chrome-hidden', hidden);
+
+        if (hidden && sidebar?.classList.contains('active')) {
+            sidebar.classList.remove('active');
+        }
+    }
+
+    function resetStatusIndicators() {
+        if (!statusIndicators || !likeIndicator || !dislikeIndicator || !ampliarIndicator) return;
+
+        statusIndicators.style.opacity = '0';
+        likeIndicator.style.opacity = '0';
+        dislikeIndicator.style.opacity = '0';
+        ampliarIndicator.style.opacity = '0';
+    }
+
+    function updateStatusIndicators(direction) {
+        if (!statusIndicators || !likeIndicator || !dislikeIndicator || !ampliarIndicator) return;
+
+        statusIndicators.style.opacity = direction ? '1' : '0';
+        likeIndicator.style.opacity = direction === 'right' ? '1' : '0';
+        dislikeIndicator.style.opacity = direction === 'left' ? '1' : '0';
+        ampliarIndicator.style.opacity = direction === 'up' ? '1' : '0';
+    }
+
+    function getSwipeThresholds(cardElement = card) {
+        const rect = cardElement?.getBoundingClientRect();
+        const width = rect?.width || 320;
+        const height = rect?.height || 480;
+
+        return {
+            horizontal: Math.max(88, Math.min(138, width * 0.26)),
+            vertical: Math.max(88, Math.min(138, height * 0.2)),
+            previewX: Math.max(24, Math.min(56, width * 0.14)),
+            previewY: Math.max(24, Math.min(48, height * 0.1)),
+            feedbackX: Math.max(120, Math.min(220, width * 0.42)),
+            feedbackY: Math.max(120, Math.min(220, height * 0.34))
+        };
+    }
+
+    function getSwipeDirection(deltaX, deltaY, thresholds = getSwipeThresholds()) {
+        const mostlyHorizontal = Math.abs(deltaX) >= Math.abs(deltaY) * 0.8;
+
+        if (mostlyHorizontal && deltaX > thresholds.previewX) return 'right';
+        if (mostlyHorizontal && deltaX < -thresholds.previewX) return 'left';
+        if (deltaY < -thresholds.previewY) return 'up';
+        return '';
+    }
 
     projectImageInput?.addEventListener('change', (e) => {
         const file = e.target.files[0];
-        if (file && file.type.startsWith('image/')) {
-            selectedImageFile = file;
-            const reader = new FileReader();
-            
-            reader.onload = (e) => {
-                previewImg.src = e.target.result;
+        if (!file || !file.type.startsWith('image/')) return;
+
+        selectedImageFile = file;
+        const reader = new FileReader();
+
+        reader.onload = (loadEvent) => {
+            if (previewImg) {
+                previewImg.src = loadEvent.target.result;
                 previewImg.style.display = 'block';
+            }
+            if (removeImageBtn) {
                 removeImageBtn.style.display = 'block';
+            }
+            if (imagePlaceholder) {
                 imagePlaceholder.style.display = 'none';
-            };
-            
-            reader.readAsDataURL(file);
-        }
+            }
+        };
+
+        reader.readAsDataURL(file);
     });
 
     removeImageBtn?.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        
+
         selectedImageFile = null;
-        projectImageInput.value = '';
-        previewImg.src = '';
-        previewImg.style.display = 'none';
+        if (projectImageInput) projectImageInput.value = '';
+        if (previewImg) {
+            previewImg.src = '';
+            previewImg.style.display = 'none';
+        }
         removeImageBtn.style.display = 'none';
-        imagePlaceholder.style.display = 'flex';
+        if (imagePlaceholder) {
+            imagePlaceholder.style.display = 'flex';
+        }
     });
 
     function closeCreateModal() {
+        if (!createProjectCard) return;
+
         createProjectCard.classList.remove('visible');
         setTimeout(() => {
             createProjectCard.classList.add('hidden');
-            createForm.reset();
-            if (selectedImageFile) {
-                selectedImageFile = null;
+            createForm?.reset();
+            selectedImageFile = null;
+
+            if (projectImageInput) projectImageInput.value = '';
+            if (previewImg) {
                 previewImg.src = '';
                 previewImg.style.display = 'none';
+            }
+            if (removeImageBtn) {
                 removeImageBtn.style.display = 'none';
+            }
+            if (imagePlaceholder) {
                 imagePlaceholder.style.display = 'flex';
             }
         }, 400);
     }
 
-    // Event listeners para crear proyecto
     closeCreate?.addEventListener('click', closeCreateModal);
     cancelCreate?.addEventListener('click', closeCreateModal);
 
     createProjectBtn?.addEventListener('click', () => {
+        if (!createProjectCard) return;
+
         createProjectCard.classList.remove('hidden');
         setTimeout(() => {
             createProjectCard.classList.add('visible');
@@ -100,26 +226,23 @@ document.addEventListener('DOMContentLoaded', () => {
     createForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Parsear tamaño de equipo (formato "5/10" o solo "10")
         const teamSizeRaw = document.getElementById('team-size').value;
-        const teamParts = teamSizeRaw.split('/').map(s => parseInt(s.trim()) || 0);
+        const teamParts = teamSizeRaw.split('/').map((value) => parseInt(value.trim(), 10) || 0);
         const teamCurrent = teamParts.length > 1 ? teamParts[0] : 1;
         const teamMax = teamParts.length > 1 ? teamParts[1] : teamParts[0];
 
-        // Parsear tecnologías: "Python, React" → [{name:"Python",icon:"Pyth"}, ...]
         const technologiesRaw = document.getElementById('technologies').value;
         const technologies = technologiesRaw
             .split(',')
-            .map(t => t.trim())
-            .filter(t => t)
-            .map(t => ({ name: t, icon: t.substring(0, 4) }));
+            .map((tech) => tech.trim())
+            .filter(Boolean)
+            .map((tech) => ({ name: tech, icon: tech.substring(0, 4) }));
 
-        // Parsear habilidades buscadas
         const skillsRaw = document.getElementById('skills').value;
-        const skills_needed = skillsRaw
+        const skillsNeeded = skillsRaw
             .split(',')
-            .map(s => s.trim())
-            .filter(s => s);
+            .map((skill) => skill.trim())
+            .filter(Boolean);
 
         const projectData = {
             title: document.getElementById('project-name').value,
@@ -133,8 +256,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 language: document.getElementById('language').value,
                 type: document.getElementById('project-type').value
             },
-            technologies: technologies,
-            skills_needed: skills_needed,
+            technologies,
+            skills_needed: skillsNeeded,
             objectives: [],
             progress: 0
         };
@@ -148,28 +271,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 const newProject = await response.json();
-                // Agregar el proyecto al manager sin recargar la página
                 if (window.projectsManager) {
                     window.projectsManager.projects.push(newProject);
                 }
                 closeCreateModal();
                 alert('¡Proyecto creado exitosamente!');
-            } else {
-                const err = await response.json();
-                alert('Error al crear el proyecto: ' + (err.error || 'Error desconocido'));
+                return;
             }
+
+            const errorData = await response.json();
+            alert(`Error al crear el proyecto: ${errorData.error || 'Error desconocido'}`);
         } catch (error) {
             console.error('Error al crear proyecto:', error);
             alert('Error de conexión al crear el proyecto');
         }
     });
-    
-    // Theme toggles
+
     const toggle = document.getElementById('theme-toggle');
     const togglemo = document.getElementById('theme-togglemo');
 
     function syncThemeToggles(sourceToggle, targetToggle) {
-        targetToggle.checked = sourceToggle.checked;
+        if (targetToggle) {
+            targetToggle.checked = sourceToggle.checked;
+        }
         document.body.classList.toggle('dark-mode', sourceToggle.checked);
     }
 
@@ -181,44 +305,190 @@ document.addEventListener('DOMContentLoaded', () => {
         syncThemeToggles(togglemo, toggle);
     });
 
-    function setupSwipeHandlers(cardElement) {
-        if (!cardElement) {
-            console.warn('No se puede configurar swipe handlers: elemento no encontrado');
+    function setTutorialDemoState(state) {
+        if (tutorialDemoStage) {
+            tutorialDemoStage.dataset.state = state;
+        }
+
+        if (tutorialDemoCaption) {
+            tutorialDemoCaption.textContent = tutorialDemoMessages[state] || tutorialDemoMessages.idle;
+        }
+    }
+
+    function resetTutorialDemoCard() {
+        if (!tutorialDemoCard) return;
+
+        tutorialDemoCard.classList.remove('is-dragging');
+        tutorialDemoCard.style.transition = '';
+        tutorialDemoCard.style.transform = '';
+        tutorialDemoCard.style.opacity = '';
+        tutorialDemoOffsetX = 0;
+        tutorialDemoOffsetY = 0;
+        tutorialDemoDragging = false;
+        tutorialDemoAnimating = false;
+    }
+
+    function showTutorial() {
+        if (!tutorialOverlay) return;
+
+        resetTutorialDemoCard();
+        setTutorialDemoState('idle');
+        tutorialOverlay.classList.add('visible');
+        tutorialOverlay.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('tutorial-open');
+    }
+
+    function closeTutorial() {
+        if (!tutorialOverlay) return;
+
+        resetTutorialDemoCard();
+        setTutorialDemoState('idle');
+        tutorialOverlay.classList.remove('visible');
+        tutorialOverlay.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('tutorial-open');
+    }
+
+    tutorialClose?.addEventListener('click', closeTutorial);
+    tutorialSkip?.addEventListener('click', closeTutorial);
+    tutorialStart?.addEventListener('click', closeTutorial);
+    tutorialOverlay?.addEventListener('click', (e) => {
+        if (e.target === tutorialOverlay) {
+            closeTutorial();
+        }
+    });
+
+    function getTutorialDemoDirection(deltaX, deltaY) {
+        const cardWidth = tutorialDemoCard?.getBoundingClientRect().width || 260;
+        const cardHeight = tutorialDemoCard?.getBoundingClientRect().height || 340;
+        const horizontalThreshold = Math.max(48, Math.min(82, cardWidth * 0.22));
+        const verticalThreshold = Math.max(48, Math.min(82, cardHeight * 0.18));
+
+        if (Math.abs(deltaX) > Math.abs(deltaY) && deltaX > horizontalThreshold) return 'right';
+        if (Math.abs(deltaX) > Math.abs(deltaY) && deltaX < -horizontalThreshold) return 'left';
+        if (deltaY < -verticalThreshold) return 'up';
+        return 'idle';
+    }
+
+    function playTutorialDemo(action) {
+        if (!tutorialDemoCard || !tutorialDemoStage || tutorialDemoAnimating) return;
+
+        tutorialDemoAnimating = true;
+        setTutorialDemoState(action);
+        tutorialDemoCard.classList.remove('is-dragging');
+        tutorialDemoCard.style.transition = 'transform 320ms ease, opacity 320ms ease';
+
+        const stageRect = tutorialDemoStage.getBoundingClientRect();
+        const cardRect = tutorialDemoCard.getBoundingClientRect();
+        const horizontalTravel = Math.max(84, Math.min(136, Math.min(stageRect.width * 0.18, cardRect.width * 0.42)));
+        const verticalTravel = Math.max(84, Math.min(136, Math.min(stageRect.height * 0.2, cardRect.height * 0.34)));
+
+        const finalTransforms = {
+            left: `translate(-${horizontalTravel}px, 0px) rotate(-12deg)`,
+            right: `translate(${horizontalTravel}px, 0px) rotate(12deg)`,
+            up: `translate(0px, -${verticalTravel}px) rotate(0deg)`
+        };
+
+        requestAnimationFrame(() => {
+            tutorialDemoCard.style.transform = finalTransforms[action];
+            tutorialDemoCard.style.opacity = '0.58';
+        });
+
+        setTimeout(() => {
+            tutorialDemoCard.style.transform = 'translate(0px, 0px) rotate(0deg)';
+            tutorialDemoCard.style.opacity = '1';
+        }, 360);
+
+        setTimeout(() => {
+            tutorialDemoCard.style.transition = '';
+            tutorialDemoAnimating = false;
+            setTutorialDemoState('idle');
+        }, 760);
+    }
+
+    function handleTutorialDemoStart(e) {
+        if (!tutorialDemoCard || tutorialDemoAnimating) return;
+
+        tutorialDemoDragging = true;
+        tutorialDemoStartX = e.clientX;
+        tutorialDemoStartY = e.clientY;
+        tutorialDemoOffsetX = 0;
+        tutorialDemoOffsetY = 0;
+        tutorialDemoCard.classList.add('is-dragging');
+        tutorialDemoCard.setPointerCapture?.(e.pointerId);
+        setTutorialDemoState('idle');
+        e.preventDefault();
+    }
+
+    function handleTutorialDemoMove(e) {
+        if (!tutorialDemoDragging || !tutorialDemoCard) return;
+
+        const rawX = e.clientX - tutorialDemoStartX;
+        const rawY = e.clientY - tutorialDemoStartY;
+        const cardRect = tutorialDemoCard.getBoundingClientRect();
+        const limitX = Math.max(92, Math.min(150, cardRect.width * 0.44));
+        const limitUp = Math.max(92, Math.min(150, cardRect.height * 0.38));
+        const limitDown = Math.max(34, Math.min(56, cardRect.height * 0.14));
+
+        tutorialDemoOffsetX = Math.max(-limitX, Math.min(limitX, rawX));
+        tutorialDemoOffsetY = Math.max(-limitUp, Math.min(limitDown, rawY));
+
+        const rotate = tutorialDemoOffsetX * 0.08;
+        tutorialDemoCard.style.transform = `translate(${tutorialDemoOffsetX}px, ${tutorialDemoOffsetY}px) rotate(${rotate}deg)`;
+        setTutorialDemoState(getTutorialDemoDirection(tutorialDemoOffsetX, tutorialDemoOffsetY));
+    }
+
+    function handleTutorialDemoEnd(e) {
+        if (!tutorialDemoDragging) return;
+
+        tutorialDemoCard?.releasePointerCapture?.(e.pointerId);
+        const action = getTutorialDemoDirection(tutorialDemoOffsetX, tutorialDemoOffsetY);
+        tutorialDemoDragging = false;
+
+        if (action === 'idle') {
+            resetTutorialDemoCard();
+            setTutorialDemoState('idle');
             return;
         }
 
-        console.log('Configurando swipe handlers para:', cardElement.id);
+        playTutorialDemo(action);
+    }
 
-        // Remover listeners existentes para evitar duplicados
+    tutorialDemoCard?.addEventListener('pointerdown', handleTutorialDemoStart);
+    tutorialDemoCard?.addEventListener('pointermove', handleTutorialDemoMove);
+    tutorialDemoCard?.addEventListener('pointerup', handleTutorialDemoEnd);
+    tutorialDemoCard?.addEventListener('pointercancel', handleTutorialDemoEnd);
+
+    showTutorial();
+
+    function setupSwipeHandlers(cardElement) {
+        if (!cardElement) return;
+
         cardElement.removeEventListener('touchstart', handleStart);
         cardElement.removeEventListener('touchmove', handleMove);
         cardElement.removeEventListener('touchend', handleEnd);
+        cardElement.removeEventListener('touchcancel', handleEnd);
         cardElement.removeEventListener('mousedown', handleStart);
 
-        // Agregar nuevos listeners
         cardElement.addEventListener('touchstart', handleStart, { passive: false });
         cardElement.addEventListener('touchmove', handleMove, { passive: false });
         cardElement.addEventListener('touchend', handleEnd);
+        cardElement.addEventListener('touchcancel', handleEnd);
         cardElement.addEventListener('mousedown', handleStart);
 
-        // Actualizar referencia global
         card = cardElement;
     }
 
-    // Configurar handlers iniciales
     if (card) {
         setupSwipeHandlers(card);
     }
 
-    // Agregar listeners globales para mouse (estos no se duplican)
     document.addEventListener('mousemove', handleMove);
     document.addEventListener('mouseup', handleEnd);
 
-    // Sidebar trigger hover handler
     sidebarTrigger?.addEventListener('mouseenter', () => {
         if (!isDragging) {
             isHoveringSidebar = true;
-            sidebar.classList.add('active');
+            sidebar?.classList.add('active');
         }
     });
 
@@ -229,38 +499,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('mousemove', (e) => {
         const edgeDistance = window.innerWidth - e.clientX;
-        
+
         if (edgeDistance < 15 && !isDragging && !isHoveringSidebar) {
             isHoveringSidebar = true;
-            sidebar.classList.add('active');
-        } 
-        else if (edgeDistance > 80 && !isDragging && isHoveringSidebar && e.target.id !== 'sidebar' && !sidebar.contains(e.target)) {
+            sidebar?.classList.add('active');
+        } else if (
+            edgeDistance > 80 &&
+            !isDragging &&
+            isHoveringSidebar &&
+            e.target.id !== 'sidebar' &&
+            !sidebar?.contains(e.target)
+        ) {
             isHoveringSidebar = false;
-            sidebar.classList.remove('active');
+            sidebar?.classList.remove('active');
         }
     });
 
     function handleStart(e) {
+        if (expandedView) return;
+
         card = document.getElementById('project-card');
         if (!card) return;
 
-        // Detener cualquier animación CSS activa para que el drag tome control
         card.classList.remove('card-entering');
         card.style.animation = 'none';
-
         isDragging = true;
+        setFeedChromeHidden(true);
 
-        createProjectBtn.style.transition = 'opacity 0.3s ease';
-        createProjectBtn.style.opacity = '0';
-        
-        if (sidebar.classList.contains('active')) {
+        if (createProjectBtn) {
+            createProjectBtn.style.transition = 'opacity 0.3s ease';
+            createProjectBtn.style.opacity = '0';
+        }
+
+        if (sidebar?.classList.contains('active')) {
             sidebar.classList.remove('active');
         }
-        
+
         if (e.type === 'mousedown') {
             e.preventDefault();
         }
-        
+
         if (e.type === 'touchstart') {
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
@@ -268,23 +546,23 @@ document.addEventListener('DOMContentLoaded', () => {
             startX = e.clientX;
             startY = e.clientY;
         }
-        
+
         offsetX = 0;
         offsetY = 0;
         card.style.transition = 'none';
-        
-        console.log('Drag iniciado en:', startX, startY);
+        clearSwipeFeedback();
+        resetStatusIndicators();
     }
 
     function handleMove(e) {
-        if (expandedView) return;
-        if (!isDragging) return;
-        
-        // Actualizar referencia a la tarjeta actual
+        if (expandedView || !isDragging) return;
+
         card = document.getElementById('project-card');
         if (!card) return;
-        
-        let currentX, currentY;
+
+        let currentX;
+        let currentY;
+
         if (e.type === 'touchmove') {
             e.preventDefault();
             currentX = e.touches[0].clientX;
@@ -293,92 +571,107 @@ document.addEventListener('DOMContentLoaded', () => {
             currentX = e.clientX;
             currentY = e.clientY;
         }
-        
+
         offsetX = currentX - startX;
         offsetY = currentY - startY;
-        
+
         const rotate = offsetX * 0.1;
         card.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${rotate}deg)`;
-        
-        // Mostrar indicadores
-        statusIndicators.style.opacity = '1';
-        if (offsetX > 50) {
-            likeIndicator.style.opacity = '1';
-            dislikeIndicator.style.opacity = '0';
-            ampliarIndicator.style.opacity = '0'; 
-        } else if (offsetX < -50) {
-            likeIndicator.style.opacity = '0';
-            dislikeIndicator.style.opacity = '1';
-            ampliarIndicator.style.opacity = '0'; 
-        } else if (offsetY < -30) {
-            likeIndicator.style.opacity = '0';
-            dislikeIndicator.style.opacity = '0';
-            ampliarIndicator.style.opacity = '1';  
+
+        const thresholds = getSwipeThresholds(card);
+        const direction = getSwipeDirection(offsetX, offsetY, thresholds);
+
+        updateStatusIndicators(direction);
+
+        if (direction === 'right') {
+            setSwipeFeedback('right', Math.min(1, Math.abs(offsetX) / thresholds.feedbackX));
+        } else if (direction === 'left') {
+            setSwipeFeedback('left', Math.min(1, Math.abs(offsetX) / thresholds.feedbackX));
+        } else if (direction === 'up') {
+            setSwipeFeedback('up', Math.min(1, Math.abs(offsetY) / thresholds.feedbackY));
         } else {
-            likeIndicator.style.opacity = '0';
-            dislikeIndicator.style.opacity = '0';
-            ampliarIndicator.style.opacity = '0'; 
+            clearSwipeFeedback();
         }
     }
 
     function handleEnd() {
-        if (expandedView) return;
-        if (!isDragging) return;
-        
-        // Actualizar referencia a la tarjeta actual
+        if (expandedView || !isDragging) return;
+
         card = document.getElementById('project-card');
         if (!card) return;
-        
+
         isDragging = false;
 
-        createProjectBtn.style.transition = 'opacity 0.3s ease';
-        createProjectBtn.style.opacity = '1';
-        
+        if (createProjectBtn) {
+            createProjectBtn.style.transition = 'opacity 0.3s ease';
+            createProjectBtn.style.opacity = '1';
+        }
+
         card.style.transition = 'transform 0.5s ease';
-        statusIndicators.style.opacity = '0';
-        
-        console.log('Drag terminado con offset:', offsetX, offsetY);
-        
-        if (offsetX > 100) {
+
+        const thresholds = getSwipeThresholds(card);
+        const mostlyHorizontal = Math.abs(offsetX) >= Math.abs(offsetY) * 0.8;
+
+        resetStatusIndicators();
+
+        if (mostlyHorizontal && offsetX > thresholds.horizontal) {
+            setSwipeFeedback('right', 1);
             card.style.transform = `translate(${window.innerWidth}px, ${offsetY}px) rotate(30deg)`;
             setTimeout(() => {
                 resetCard();
                 handleSwipe('right');
+                setFeedChromeHidden(false);
             }, 500);
-        } else if (offsetX < -100) {
+            return;
+        }
+
+        if (mostlyHorizontal && offsetX < -thresholds.horizontal) {
+            setSwipeFeedback('left', 1);
             card.style.transform = `translate(-${window.innerWidth}px, ${offsetY}px) rotate(-30deg)`;
             setTimeout(() => {
                 resetCard();
                 handleSwipe('left');
+                setFeedChromeHidden(false);
             }, 500);
-        } else if (offsetY < -100) {
-            card.style.transition = 'transform 0.5s ease';
+            return;
+        }
+
+        if (offsetY < -thresholds.vertical) {
+            setSwipeFeedback('up', 1);
             card.style.transform = `translate(0px, -${window.innerHeight}px) rotate(0deg)`;
 
             setTimeout(() => {
-                expandedCard.classList.remove('hidden');
-                expandedCard.classList.add('visible');
+                expandedCard?.classList.remove('hidden');
+                expandedCard?.classList.add('visible');
                 expandedView = true;
                 card.style.transition = 'none';
                 card.style.opacity = '0';
                 card.style.transform = 'translate(0, 0) rotate(0deg)';
-                card.style.transform = 'translate(0, 0)';
                 card.style.transition = 'opacity 0.3s ease';
                 card.style.opacity = '1';
+                clearSwipeFeedback();
             }, 500);
-        } else {
-            card.style.transform = 'translate(0, 0) rotate(0deg)';
+            return;
         }
+
+        card.style.transform = 'translate(0, 0) rotate(0deg)';
+        clearSwipeFeedback();
+        setTimeout(() => {
+            if (!expandedView && !isDragging) {
+                setFeedChromeHidden(false);
+            }
+        }, 220);
     }
 
     function resetCard() {
         card = document.getElementById('project-card');
         if (!card) return;
-        
+
         card.style.transition = 'none';
         card.style.opacity = '0';
         card.style.transform = 'translate(0, 0) rotate(0deg)';
-        
+        clearSwipeFeedback();
+
         setTimeout(() => {
             card.style.transition = 'opacity 0.3s ease';
             card.style.opacity = '1';
@@ -386,36 +679,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     closeExpanded?.addEventListener('click', () => {
+        clearSwipeFeedback();
         expandedCard.classList.remove('visible');
         setTimeout(() => {
             expandedCard.classList.add('hidden');
             expandedView = false;
+            setFeedChromeHidden(false);
         }, 400);
     });
 
     function handleSwipe(direction) {
-        if (window.projectsManager) {
-            // Guardar el proyecto actual ANTES de que cambie
-            const currentProject = window.projectsManager.projects[window.projectsManager.currentProjectIndex];
+        if (!window.projectsManager) return;
 
-            window.projectsManager.handleCardSwipe(direction);
+        const currentProject = window.projectsManager.projects?.[window.projectsManager.currentProjectIndex];
+        window.projectsManager.handleCardSwipe(direction);
 
-            if (direction === 'right' && currentProject) {
-                fetch('/api/interests', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ project_id: currentProject.id })
-                })
-                .then(r => r.json())
+        if (direction === 'right' && currentProject) {
+            fetch('/api/interests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ project_id: currentProject.id })
+            })
+                .then((response) => response.json())
                 .then(() => showMatchToast('¡Mostraste interés en este proyecto! 🚀'))
-                .catch(err => console.error('Error guardando interés:', err));
-            }
+                .catch((error) => console.error('Error guardando interés:', error));
         }
     }
 
-    function showMatchToast(msg) {
+    function showMatchToast(message) {
         const toast = document.createElement('div');
-        toast.textContent = msg;
+        toast.textContent = message;
         toast.style.cssText = `
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             background: #667eea; color: white; padding: 12px 24px;
@@ -427,22 +720,21 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => toast.remove(), 2500);
     }
 
-    // Mostrar "Ver candidatos" solo si el usuario tiene proyectos creados
     fetch('/api/user/projects')
-        .then(r => r.json())
-        .then(projects => {
+        .then((response) => response.json())
+        .then((projects) => {
             if (Array.isArray(projects) && projects.length > 0) {
-                const btn = document.getElementById('candidates-btn');
-                if (btn) btn.style.display = 'flex';
+                const button = document.getElementById('candidates-btn');
+                if (button) {
+                    button.style.display = 'flex';
+                }
             }
         })
         .catch(() => {});
 
-    // Hacer funciones disponibles globalmente
     window.handleSwipe = handleSwipe;
     window.setupSwipeHandlers = setupSwipeHandlers;
 
-    // Panel de configuración (botón gear)
     const settingsPanel = document.createElement('div');
     settingsPanel.id = 'settings-panel';
     settingsPanel.style.cssText = `
@@ -477,18 +769,18 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.body.appendChild(settingsPanel);
 
-    document.querySelectorAll('.menu-icon.gear').forEach(btn => {
-        btn.style.cursor = 'pointer';
-        btn.addEventListener('click', () => {
+    document.querySelectorAll('.menu-icon.gear').forEach((button) => {
+        button.style.cursor = 'pointer';
+        button.addEventListener('click', () => {
             settingsPanel.style.display = 'block';
         });
     });
 
-    document.getElementById('settings-close-btn').addEventListener('click', () => {
+    document.getElementById('settings-close-btn')?.addEventListener('click', () => {
         settingsPanel.style.display = 'none';
     });
 
-    document.getElementById('settings-logout-btn').addEventListener('click', async () => {
+    document.getElementById('settings-logout-btn')?.addEventListener('click', async () => {
         await fetch('/api/logout', { method: 'POST' });
         window.location.href = '/';
     });
